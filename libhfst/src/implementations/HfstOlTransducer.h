@@ -29,7 +29,7 @@ namespace hfst { namespace implementations
   using std::ifstream;
   using std::string;
   ;
-  
+
   class HfstOlInputStream
   {
   private:
@@ -50,19 +50,20 @@ namespace hfst { namespace implementations
     bool is_good(void) const;
     bool is_fst(void) const;
 
+    size_t stream_tellg();
     char stream_get();
     short stream_get_short();
     void stream_unget(char c);
     void ignore(unsigned int n);
-    
+
     bool operator() (void) const;
     hfst_ol::Transducer * read_transducer(bool has_header);
-    
+
     // 1=unweighted, 2=weighted
     static int is_fst(FILE * f);
     static int is_fst(istream &s);
   };
-  
+
   class HfstOlOutputStream
   {
   private:
@@ -78,14 +79,14 @@ namespace hfst { namespace implementations
     void write(const char &c);
     void write_transducer(hfst_ol::Transducer * transducer);
   };
-  
+
   class HfstOlTransducer
   {
    public:
     static hfst_ol::Transducer * create_empty_transducer(bool weighted);
-    
+
     static bool is_cyclic(hfst_ol::Transducer* t);
-    
+
     static void extract_paths
       (hfst_ol::Transducer * t, hfst::ExtractStringsCb& callback,
        int cycles=-1, const FdTable<hfst_ol::SymbolNumber>* fd=NULL,
@@ -94,9 +95,9 @@ namespace hfst { namespace implementations
       get_flag_diacritics(hfst_ol::Transducer* t);
     static StringSet get_alphabet(hfst_ol::Transducer * t);
 
-    
+
   };
-  
+
 } }
 
 #endif

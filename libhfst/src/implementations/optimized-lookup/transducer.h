@@ -35,6 +35,7 @@
 #include "../../HfstFlagDiacritics.h"
 #include "../../HfstSymbolDefs.h"
 #include "../../HfstDataTypes.h"
+#include "../../serialize.h"
 
 #ifdef _MSC_VER
  #include <BaseTsd.h>
@@ -126,7 +127,7 @@ private:
     SymbolNumber number_of_symbols;
     TransitionTableIndex size_of_transition_index_table;
     TransitionTableIndex size_of_transition_target_table;
-  
+
     StateIdNumber number_of_states;
     TransitionNumber number_of_transitions;
 
@@ -148,28 +149,23 @@ private:
     template<class T>
     static T read_property(std::istream& is)
         {
-            T p;
-            is.read(reinterpret_cast<char*>(&p), sizeof(T));
-            return p;
+            T p = 0;
+            return ::read(is, p);
         }
+
     template<class T>
     static void write_property(T prop, std::ostream& os)
-        { os.write(reinterpret_cast<const char*>(&prop), sizeof(prop)); }
+        { ::write(os, prop); }
+
     static bool read_bool_property(std::istream& is)
         {
-            unsigned int prop;
-            is.read(reinterpret_cast<char*>(&prop), sizeof(unsigned int));
-            if(prop == 0)
-                return false;
-            if(prop == 1)
-                return true;
-            header_error();
-            return false;
+        	bool p = false;
+            return ::read(is, p);
         }
+
     static void write_bool_property(bool value, std::ostream& os)
         {
-            unsigned int prop = (value?1:0);
-            os.write(reinterpret_cast<char*>(&prop), sizeof(prop));
+          ::write(os, value);
         }
 public:
     TransducerHeader(bool weights):
@@ -239,14 +235,14 @@ public:
                 HFST_THROW(TransducerHasWrongTypeException);
             }
         }
-    
+
     SymbolNumber symbol_count(void) const { return number_of_symbols; }
     SymbolNumber input_symbol_count(void) const {
         return number_of_input_symbols;
     }
     void increment_symbol_count(void)
         {++number_of_symbols; ++number_of_input_symbols;}
-  
+
     TransitionTableIndex index_table_size(void) const
         { return size_of_transition_index_table; }
     TransitionTableIndex target_table_size(void) const
@@ -276,7 +272,7 @@ public:
             }
             return false;
         }
-  
+
     void set_flag(HeaderFlag flag, bool value)
         {
             switch (flag) {
@@ -310,7 +306,7 @@ public:
                 return;
             }
         }
-  
+
     void display() const
         {
             std::cout << "Transducer properties:" << std::endl
@@ -345,7 +341,7 @@ public:
                       << " has_unweighted_input_epsilon_cycles: "
                       << has_unweighted_input_epsilon_cycles << std::endl;
         }
-  
+
     void write(std::ostream& os) const
         {
             write_property(number_of_input_symbols, os);
@@ -364,7 +360,7 @@ public:
             write_bool_property(has_input_epsilon_cycles, os);
             write_bool_property(has_unweighted_input_epsilon_cycles, os);
         }
-  
+
     friend class ConvertTransducerHeader;
 };
 
@@ -377,7 +373,7 @@ protected:
     SymbolNumber default_symbol;
     SymbolNumber identity_symbol;
     SymbolNumber orig_symbol_count;
-  
+
 public:
     TransducerAlphabet()
         {
@@ -391,9 +387,9 @@ public:
                        SymbolNumber symbol_count,
                        bool preserve_diacritic_strings = true);
     TransducerAlphabet(const SymbolTable& st);
-  
+
     void display() const;
-  
+
     void write(std::ostream& os) const
         {
             for(SymbolTable::const_iterator i = symbol_table.begin();
@@ -403,16 +399,16 @@ public:
                 os.put('\0');
             }
         }
-  
+
     bool has_flag_diacritics() const
         { return fd_table.num_features() > 0; }
     bool is_flag_diacritic(SymbolNumber symbol) const
         { return fd_table.is_diacritic(symbol); }
     bool is_like_epsilon(SymbolNumber symbol) const;
-    
+
     const SymbolTable& get_symbol_table() const
         { return symbol_table; }
-    
+
     const std::string string_from_symbol(const SymbolNumber symbol) const
     // represent epsilon as blank string
         { return (symbol == 0) ? "" : symbol_table[symbol]; }
@@ -436,7 +432,7 @@ public:
     virtual void add_symbol(char * symbol);
     virtual void add_symbol(const std::string & symbol);
 
-    
+
 };
 
 class TransitionIndex
@@ -452,14 +448,18 @@ public:
     TransitionIndex(SymbolNumber input,
                     TransitionTableIndex first_transition):
         input_symbol(input), first_transition_index(first_transition) {}
-  
+
     TransitionIndex(std::istream& is):
         input_symbol(NO_SYMBOL_NUMBER), first_transition_index(0)
         {
+        	::read(is, input_symbol);
+        	::read(is, first_transition_index);
+        	/*
             is.read(reinterpret_cast<char*>(&input_symbol),
                     sizeof(SymbolNumber));
             is.read(reinterpret_cast<char*>(&first_transition_index),
                     sizeof(TransitionTableIndex));
+            //*/
         }
     // A constructor for reading from a char array at p
     TransitionIndex(char * p):
@@ -467,35 +467,30 @@ public:
         first_transition_index((*(TransitionTableIndex*)
                                 (p + sizeof(SymbolNumber)))) {}
     virtual ~TransitionIndex() {}
-  
+
     void write(std::ostream& os, bool weighted) const
         {
-            os.write(reinterpret_cast<const char*>(&input_symbol),
-                     sizeof(SymbolNumber));
+            ::write(os, input_symbol);
             if(!weighted && input_symbol == NO_SYMBOL_NUMBER &&
                first_transition_index != NO_TABLE_INDEX) {
                 // Make sure that we write the correct type of final index
-                unsigned int unweighted_final_index = 1;
-                os.write(reinterpret_cast<const char*>(&unweighted_final_index),
-                         sizeof(first_transition_index));
+                ::write(os, 1u);
             } else {
-                os.write(reinterpret_cast<const char*>(
-                             &first_transition_index),
-                         sizeof(first_transition_index));
+                ::write(os, first_transition_index);
             }
         }
-  
+
     void display() const;
-  
+
     TransitionTableIndex get_target(void) const
         { return first_transition_index; }
     SymbolNumber get_input_symbol(void) const
         { return input_symbol; }
-  
+
     bool matches(const SymbolNumber s) const;
     virtual bool final(void) const;
     virtual Weight final_weight(void) const { return 0.0; }
-  
+
     static TransitionIndex create_final()
         { return TransitionIndex(NO_SYMBOL_NUMBER, 1); }
 };
@@ -511,12 +506,12 @@ public:
         TransitionIndex(is) {}
     TransitionWIndex(char * p):
         TransitionIndex(p) {}
-    
+
     Weight final_weight(void) const;
-  
+
     static TransitionWIndex create_final()
         { return TransitionWIndex(NO_SYMBOL_NUMBER, 0); }
-    
+
     static TransitionWIndex create_final(Weight w)
         {
             union to_weight
@@ -528,7 +523,7 @@ public:
             return TransitionWIndex(NO_SYMBOL_NUMBER, weight.i);
         }
 };
-    
+
 class Transition
 {
 protected:
@@ -549,12 +544,17 @@ public:
         input_symbol(NO_SYMBOL_NUMBER), output_symbol(NO_SYMBOL_NUMBER),
         target_index(0)
         {
+        	::read(is, input_symbol);
+        	::read(is, output_symbol);
+        	::read(is, target_index);
+        	/*
             is.read(reinterpret_cast<char*>(&input_symbol),
                     sizeof(SymbolNumber));
             is.read(reinterpret_cast<char*>(&output_symbol),
                     sizeof(SymbolNumber));
             is.read(reinterpret_cast<char*>(&target_index),
                     sizeof(target_index));
+            //*/
         }
     // A constructor for reading from char array
     Transition(char * p):
@@ -562,17 +562,14 @@ public:
         output_symbol(*(SymbolNumber*) (p + sizeof(SymbolNumber))),
         target_index(*(TransitionTableIndex*) (p + 2 * sizeof(SymbolNumber)))
         {}
-  
+
     virtual ~Transition() {}
-  
+
     virtual void write(std::ostream& os, bool weighted) const
         {
-            os.write(reinterpret_cast<const char*>(&input_symbol),
-                     sizeof(input_symbol));
-            os.write(reinterpret_cast<const char*>(&output_symbol),
-                     sizeof(output_symbol));
-            os.write(reinterpret_cast<const char*>(&target_index),
-                     sizeof(target_index));
+            ::write(os, input_symbol);
+            ::write(os, output_symbol);
+            ::write(os, target_index);
             if (weighted) {
                 os << 0.0f;
             }
@@ -583,7 +580,7 @@ public:
     TransitionTableIndex get_target(void) const {return target_index;}
     SymbolNumber get_output_symbol(void) const {return output_symbol;}
     SymbolNumber get_input_symbol(void) const {return input_symbol;}
-  
+
     bool matches(const SymbolNumber s) const;
     virtual bool final(void) const;
     virtual Weight get_weight(void) const { return 0.0; }
@@ -603,25 +600,27 @@ public:
     TransitionW(bool final, Weight w):
         Transition(final), transition_weight(w) {}
     TransitionW(std::istream& is): Transition(is), transition_weight(0.0f)
-        {is.read(reinterpret_cast<char*>(&transition_weight), sizeof(Weight));}
+        {
+        ::read(is, transition_weight);
+        //is.read(reinterpret_cast<char*>(&transition_weight), sizeof(Weight));
+        }
     TransitionW(char * p):
         Transition(p),
         transition_weight(*((Weight*)
                             (p + 2 * sizeof(SymbolNumber)
                              + sizeof(TransitionTableIndex))))
         {}
-  
+
     void write(std::ostream& os, bool weighted) const
         {
             Transition::write(os, false);
             if (weighted) {
-                os.write(reinterpret_cast<const char*>(&transition_weight),
-                         sizeof(transition_weight));
+            	::write(os, transition_weight);
             }
         }
-  
+
     void display() const;
-  
+
     Weight get_weight(void) const { return transition_weight; }
 };
 
@@ -648,10 +647,10 @@ public:
             free(p_orig);
         }
     TransducerTable(const TransducerTable& t): table(t.table) {}
-  
+
     void append(const T& v) {table.push_back(v);}
     void set(size_t index, const T& v) {table[index] = v;}
-  
+
     const T& operator[](TransitionTableIndex i) const
         {
             return (i < TRANSITION_TARGET_TABLE_START) ?
@@ -659,7 +658,7 @@ public:
         }
 
     std::vector<T> get_vector(void) const { return std::vector<T>(table); } ;
-  
+
     void display(bool transition_table) const
         {
             for(size_t i=0;i<table.size();i++)
@@ -671,7 +670,7 @@ public:
                 table[i].display();
             }
         }
-  
+
     unsigned int size() const {return table.size();}
 };
 
@@ -679,7 +678,7 @@ class TransducerTablesInterface
 {
 public:
     virtual ~TransducerTablesInterface() {}
-  
+
     virtual const TransitionIndex& get_index(
         TransitionTableIndex i) const = 0;
     virtual const Transition& get_transition(
@@ -702,7 +701,7 @@ public:
         TransitionTableIndex i) const = 0;
     virtual Weight get_final_weight(
         TransitionTableIndex i) const = 0;
-  
+
     virtual void display() const {}
 };
 
@@ -718,7 +717,7 @@ public:
         index_table(
             is, index_table_size),
         transition_table(is, transition_table_size) { }
-    
+
     TransducerTables(): index_table(1, T1::create_final()),
                         transition_table() {}
     TransducerTables(const TransducerTable<T1>& index_table,
@@ -747,7 +746,7 @@ public:
         { return index_table[i].final(); }
     Weight get_final_weight(TransitionTableIndex i) const
         { return index_table[i].final_weight(); }
-  
+
     void display() const
         {
             std::cout << "Transition index table:" << std::endl;
@@ -759,7 +758,7 @@ public:
 
 
 // There follow some classes for implementing lookup
-    
+
 class OlLetterTrie;
 typedef std::vector<OlLetterTrie*> OlLetterTrieVector;
 
@@ -768,7 +767,7 @@ class OlLetterTrie
 private:
     OlLetterTrieVector letters;
     SymbolNumberVector symbols;
-    
+
 public:
     OlLetterTrie():
         letters(UCHAR_MAX+1, static_cast<OlLetterTrie*>(NULL)),
@@ -781,24 +780,24 @@ public:
             letters[i] = 0;
         }
     }
-    
+
     void add_string(const char * p,SymbolNumber symbol_key);
     bool has_key_starting_with(const char c) const;
-    
+
     SymbolNumber find_key(char ** p);
-    
+
 };
 
 class Encoder {
-    
+
 protected:
     SymbolNumber number_of_input_symbols;
     OlLetterTrie letters;
     SymbolNumberVector ascii_symbols;
-    
+
     void read_input_symbols(const SymbolTable & kt);
     void read_input_symbol(const char * symbol, const int symbol_number);
-    
+
 public:
     Encoder(const SymbolTable & st, SymbolNumber input_symbol_count):
         number_of_input_symbols(input_symbol_count),
@@ -897,7 +896,7 @@ protected:
     void try_epsilon_transitions(unsigned int input_tape_pos,
                                  unsigned int output_tape_pos,
                                  TransitionTableIndex i);
-  
+
     void try_epsilon_indices(unsigned int input_tape_pos,
                              unsigned int output_tape_pos,
                              TransitionTableIndex i);
@@ -911,11 +910,11 @@ protected:
                     unsigned int input_tape_pos,
                     unsigned int output_tape_pos,
                     TransitionTableIndex i);
-    
+
     void get_analyses(unsigned int input_tape_pos,
                       unsigned int output_tape_pos,
                       TransitionTableIndex i);
-    
+
     void find_loop_epsilon_transitions(unsigned int input_pos,
                                        TransitionTableIndex i);
     void find_loop_epsilon_indices(unsigned int input_pos,
@@ -964,7 +963,7 @@ public:
         { return tables->get_index(i); }
     const Transition& get_transition(TransitionTableIndex i) const
         { return tables->get_transition(i); }
-    
+
     bool final_index(TransitionTableIndex i) const
         {
             if (indexes_transition_table(i)) {
@@ -980,12 +979,12 @@ public:
 
     bool is_lookup_infinitely_ambiguous(const StringVector & s);
     bool is_lookup_infinitely_ambiguous(const std::string & input);
-    
+
     TransducerTable<TransitionWIndex> copy_windex_table();
     TransducerTable<TransitionW> copy_transitionw_table();
     TransducerTable<TransitionIndex> copy_index_table();
     TransducerTable<Transition> copy_transition_table();
-    
+
     // state_index must be an index to a state which is defined as either:
     // (1) the start of a set of entries in the transition index table, or
     // (2) the boundary before a set of entries in the transition table, in
@@ -1035,7 +1034,7 @@ public:
     bool is_weighted(void)
         { return header->probe_flag(Weighted);}
 
-    
+
     friend class ConvertTransducer;
 };
 
@@ -1074,7 +1073,7 @@ public:
     StringWeightComparison(bool reverse_result=false):
         reverse(reverse_result)
         {}
-    
+
     bool operator() (StringWeightPair lhs, StringWeightPair rhs)
         { // return true when we want rhs to appear before lhs
             if (reverse) {
@@ -1102,13 +1101,13 @@ typedef std::priority_queue<StringWeightPair,
   {
   return transitions[i]->final();
   }
-    
+
   bool final_index(TransitionTableIndex i)
   {
   return indices[i]->final();
   }
 
-  
+
   public:
   Transducer(FILE * f):
   header(TransducerHeader(f)),
@@ -1122,9 +1121,9 @@ typedef std::priority_queue<StringWeightPair,
   {}
 
   TransitionIndexVector &indices;
-  
+
   TransitionVector &transitions;
-    
+
   SymbolNumber find_next_key(char ** p)
   {
   return encoder.find_key(p);
@@ -1238,7 +1237,7 @@ int nByte_utf8(unsigned char c);
 
 class InputString
 {
-  
+
 private:
     SymbolNumberVector s;
 
@@ -1248,7 +1247,7 @@ public:
         { }
 
     bool initialize(const Encoder & encoder, char * input, SymbolNumber other);
-    
+
     unsigned int len(void)
         {
             return s.size();
@@ -1264,7 +1263,7 @@ public:
 class AlphabetTranslationException: public std::runtime_error
 { // "what" should hold the first untranslatable symbol
 public:
-    
+
     AlphabetTranslationException(const std::string what):
         std::runtime_error(what)
         { }
@@ -1283,7 +1282,7 @@ public:
     SymbolNumberVector alphabet_translator;
 //    hfst::FdTable<SymbolNumber> operations;
     std::vector<std::string> symbol_table;
-    
+
     Speller(Transducer * mutator_ptr, Transducer * lexicon_ptr):
         mutator(mutator_ptr),
         lexicon(lexicon_ptr),
@@ -1295,7 +1294,7 @@ public:
         {
             build_alphabet_translator();
         }
-    
+
     bool init_input(char * str, const Encoder & encoder, SymbolNumber other);
 
     void build_alphabet_translator(void);

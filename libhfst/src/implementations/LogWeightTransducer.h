@@ -73,10 +73,11 @@ namespace implementations
     void ignore(unsigned int);
     LogFst * read_transducer();
 
+    size_t stream_tellg();
     char stream_get();
     short stream_get_short();
     void stream_unget(char c);
-    
+
     static bool is_fst(FILE * f);
     static bool is_fst(istream &s);
   };
@@ -111,7 +112,7 @@ namespace implementations
       bool done(void);
       LogWeightState value(void);
     };
- 
+
 
   class LogWeightTransition
     {
@@ -140,7 +141,7 @@ namespace implementations
       bool done(void);
       LogWeightTransition value(void);
     };
-  
+
 
   class LogWeightTransducer
     {
@@ -212,14 +213,14 @@ namespace implementations
 
       static void write_in_att_format(LogFst * t, FILE *ofile);
       static void write_in_att_format_number(LogFst * t, FILE *ofile);
-      
+
       static void test_minimize(void);
 
       static void write_in_att_format(LogFst * t, std::ostream &os);
       static void write_in_att_format_number(LogFst * t, std::ostream &os);
 
       static LogFst * read_in_att_format(FILE *ifile);
-      
+
       static bool are_equivalent(LogFst *one, LogFst *another);
       static bool is_cyclic(LogFst * t);
       static bool is_automaton(LogFst * t);
@@ -272,7 +273,7 @@ namespace implementations
       static fst::SymbolTable create_symbol_table(std::string name);
       static void initialize_symbol_tables(LogFst *t);
       static void remove_symbol_table(LogFst *t);
-      
+
       /* Maps state numbers in AT&T text format to state ids used by
          OpenFst transducers. */
       typedef std::map<int, StateId> StateMap;

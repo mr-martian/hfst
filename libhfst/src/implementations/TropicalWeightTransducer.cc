@@ -33,7 +33,7 @@ namespace hfst {
     {
       warning_stream = os;
     }
-    
+
     // This function can be moved to its own file if TropicalWeightTransducer.o
     // yields a 'File too big' error.
     StdVectorFst * TropicalWeightTransducer::push_weights
@@ -42,7 +42,7 @@ namespace hfst {
       assert (t->InputSymbols() != NULL);
 
       CHECK_EPSILON_CYCLES(t, "push_weights");
-      
+
       fst::StdVectorFst * retval = new fst::StdVectorFst();
       if (to_initial_state)
         fst::Push<StdArc, REWEIGHT_TO_INITIAL>(*t, retval, fst::kPushWeights);
@@ -163,6 +163,10 @@ namespace hfst {
       i_stream(filename.c_str(), std::ios::in | std::ios::binary),
       input_stream(i_stream)
   {}
+
+  size_t TropicalWeightInputStream::stream_tellg() {
+    return input_stream.tellg();
+  }
 
   char TropicalWeightInputStream::stream_get() {
     return (char) input_stream.get(); }
@@ -306,11 +310,11 @@ namespace hfst {
           ! it.Done(); it.Next() ) {
       km [ (unsigned int)it.Value() ]
         = (unsigned int) t2->InputSymbols()->Find( it.Symbol() );
-      
+
       assert(it.Value() >= 0);
       assert(! (t2->InputSymbols()->Find( it.Symbol() ) < 0));
     }
-    
+
     return km;
   }
 
@@ -418,7 +422,7 @@ namespace hfst {
     if (initial_state != 0) {
       zero_print = initial_state;
     }
-      
+
     for (fst::StateIterator<StdVectorFst> siter(*t);
          ! siter.Done(); siter.Next())
       {
@@ -501,7 +505,7 @@ namespace hfst {
     if (initial_state != 0) {
       zero_print = initial_state;
     }
-      
+
     for (fst::StateIterator<StdVectorFst> siter(*t);
          ! siter.Done(); siter.Next())
       {
@@ -585,7 +589,7 @@ namespace hfst {
     if (initial_state != 0) {
       zero_print = initial_state;
     }
-      
+
     for (fst::StateIterator<StdVectorFst> siter(*t);
          ! siter.Done(); siter.Next())
       {
@@ -671,7 +675,7 @@ namespace hfst {
     if (initial_state != 0) {
       zero_print = initial_state;
     }
-      
+
     for (fst::StateIterator<StdVectorFst> siter(*t);
          ! siter.Done(); siter.Next())
       {
@@ -743,7 +747,7 @@ namespace hfst {
         }
       }
   }
-  
+
 
   // AT&T format is handled here ------------------------------
 
@@ -896,7 +900,7 @@ namespace hfst {
                      it1 != unknown.end(); it1++)
                   {
             if (! FdOperation::is_diacritic(*it1)) {
-              
+
               int64 inumber = is->Find(*it1);
               for (StringSet::iterator it2 = unknown.begin();
                it2 != unknown.end(); it2++)
@@ -978,7 +982,7 @@ namespace hfst {
     for (fst::StateIterator<StdVectorFst> siter(*t);
          ! siter.Done(); siter.Next())
       result->AddState();
-    
+
     // go through all states in this
     for (fst::StateIterator<StdVectorFst> siter(*t);
          ! siter.Done(); siter.Next())
@@ -994,7 +998,7 @@ namespace hfst {
         // make the new state final, if needed
         if (t->Final(s) != TropicalWeight::Zero())
           result->SetFinal(result_s, t->Final(s).Value());
-        
+
 
         // go through all the arcs in this
         for (fst::ArcIterator<StdVectorFst> aiter(*t,s);
@@ -1005,7 +1009,7 @@ namespace hfst {
             // find the corresponding target state in result or, if not found,
             // create a new state
             StateId result_nextstate=arc.nextstate;
-            
+
             // copy the transition
             result->AddArc(result_s, StdArc(arc.ilabel, arc.olabel,
                                             arc.weight, result_nextstate));
@@ -1054,7 +1058,7 @@ namespace hfst {
     StringSet t2_symbols = get_alphabet(t2);
     hfst::symbols::collect_unknown_sets(t1_symbols, unknown_t1,
                     t2_symbols, unknown_t2);
-    
+
     if (DEBUG)
       {
     fprintf(stderr, "New symbols for t1: ");
@@ -1082,7 +1086,7 @@ namespace hfst {
       }
     }
     t2->SetInputSymbols(st2);
-    
+
     // ...calculate the number mappings needed in harmonization...
     NumberNumberMap km = create_mapping(t1, t2);
 
@@ -1096,7 +1100,7 @@ namespace hfst {
 
     // 3. Calculate the set of symbol pairs to which a non-identity "?:?"
     //    transition is expanded for both transducers.
-    
+
     fst::StdVectorFst *harmonized_t1;
     fst::StdVectorFst *harmonized_t2;
 
@@ -1136,7 +1140,7 @@ namespace hfst {
     input_stream.ignore(6);
     skip_identifier_version_3_0();
   }
-  
+
   void TropicalWeightInputStream::close(void)
   {
     if (filename != string())
@@ -1162,12 +1166,12 @@ namespace hfst {
     else
       { return input_stream.good(); }
   }
-  
+
   bool TropicalWeightInputStream::is_fst(void) const
   {
     return is_fst(input_stream);
   }
-  
+
   bool TropicalWeightInputStream::is_fst(FILE * f)
   {
     if (f == NULL)
@@ -1176,7 +1180,7 @@ namespace hfst {
     ungetc(c, f);
     return c == 0xd6;
   }
-  
+
   bool TropicalWeightInputStream::is_fst(istream &s)
   {
     return s.good() && (s.peek() == 0xd6);
@@ -1316,7 +1320,7 @@ namespace hfst {
     st.AddSymbol(internal_identity, 2);
     return st;
   }
-  
+
   void TropicalWeightTransducer::initialize_symbol_tables(StdVectorFst *t) {
     SymbolTable st = create_symbol_table("");
     t->SetInputSymbols(&st);
@@ -1440,7 +1444,7 @@ namespace hfst {
 
     return retval;
   }
-  
+
   bool TropicalWeightTransducer::is_automaton(StdVectorFst * t)
   {
     for (fst::StateIterator<StdVectorFst> siter(*t);
@@ -1707,7 +1711,7 @@ namespace hfst {
     t->SetFinal(state, 0.5);
     t->AddArc(initial, StdArc(1,1,0.5,state));
     t->AddArc(state, StdArc(2,2,0.5,initial));
- 
+
     // print t before minimize
     print_att_number(t, stderr);
 
@@ -1918,7 +1922,7 @@ namespace hfst {
     retval->SetInputSymbols(t->InputSymbols());
     return retval;
   }
-  
+
   typedef std::pair<int,int> LabelPair;
   typedef std::vector<LabelPair> LabelPairVector;
 
@@ -1947,7 +1951,7 @@ namespace hfst {
     RelabelFst<StdArc> t_subst(*t,v,v);
     return new StdVectorFst(t_subst);
   }
-  
+
   void TropicalWeightTransducer::set_symbol_table
   (StdVectorFst * t,
    std::vector<std::pair<unsigned short, std::string> > symbol_mappings)
@@ -2233,7 +2237,7 @@ namespace hfst {
                                       tr_arc.nextstate + start_state
                                       )
                          );
-              
+
             }
           }
         }
@@ -2318,7 +2322,7 @@ namespace hfst {
       }
 
     t->SetFinal(s,0);
-    
+
     t->SetInputSymbols(st);
     return t;
   }
@@ -2475,7 +2479,7 @@ namespace hfst {
       }
     return t_copy;
   }
-  
+
 
   // ----- TRIE FUNCTIONS BEGINS -----
 
@@ -2537,7 +2541,7 @@ namespace hfst {
           }
       }
   }
-  
+
   void TropicalWeightTransducer::add_sub_trie(fst::StdVectorFst &t1,
                   StateId t1_state,
                   const fst::StdVectorFst * t2,
@@ -2593,7 +2597,7 @@ namespace hfst {
             return ret.continueSearch;
           }
       }
-    
+
     // sort arcs by number of visitations
     vector<const StdArc*> arcs;
     for(fst::ArcIterator<StdVectorFst> it(*t,s); !it.Done(); it.Next())
@@ -2608,13 +2612,13 @@ namespace hfst {
         arcs[k] = arcs[k-1];
       arcs[i] = &a;
     }
-    
+
     bool res = true;
     for( size_t i=0; i<arcs.size() && res == true; i++ )
     {
       const StdArc &arc = *(arcs[i]);
       bool added_fd_state = false;
-    
+
       if (fd_state_stack) {
         if(fd_state_stack->back().get_table().get_operation(arc.ilabel)
            != NULL) {
@@ -2627,7 +2631,7 @@ namespace hfst {
           }
         }
       }
-      
+
       /* Handle spv here. Special symbols (flags, epsilons)
          are always inserted. */
 
@@ -2650,32 +2654,32 @@ namespace hfst {
          weight_sum+arc.weight.Value(),
          callback, cycles, fd_state_stack, filter_fd,
          spv);
-      
+
       spv.pop_back();
 
       if(added_fd_state)
         fd_state_stack->pop_back();
     }
-    
+
     path_visitations[s]--;
     return res;
   }
-  
+
   static const int BUFFER_START_SIZE = 64;
-  
+
   void TropicalWeightTransducer::extract_paths
   (StdVectorFst * t, hfst::ExtractStringsCb& callback,
    int cycles, FdTable<int64>* fd, bool filter_fd)
   {
     if (t->Start() == -1)
       return;
-    
+
     map<StateId, unsigned short> all_visitations;
     map<StateId, unsigned short> path_visitations;
     std::vector<hfst::FdState<int64> >* fd_state_stack
       = (fd==NULL) ? NULL : new std::vector<hfst::FdState<int64> >
       (1, hfst::FdState<int64>(*fd));
-    
+
     StringPairVector spv;
     hfst::implementations::extract_paths
       (t,t->Start(),all_visitations,path_visitations,
@@ -2695,7 +2699,7 @@ namespace hfst {
     int start_state = t->Start();
     if (start_state < 0)
       return true;
-    
+
     for (fst::ArcIterator<StdVectorFst> aiter(*t,start_state);
          !aiter.Done(); aiter.Next())
       {
@@ -2711,7 +2715,7 @@ namespace hfst {
     if (is_minimal_and_empty(t)) {
       throw "transducer is empty";
     }
-    
+
     HfstTwoLevelPath path;
     path.first=0; // zero weight
     StateId current_state = t->Start();
@@ -2744,7 +2748,7 @@ namespace hfst {
     while (1) {
 
       visited[ current_state ] = 1;
-      
+
       vector<fst::StdArc> t_transitions;
 
       for (fst::ArcIterator<StdVectorFst> aiter(*t,current_state);
@@ -2752,7 +2756,7 @@ namespace hfst {
     {
       t_transitions.push_back(aiter.Value());
     }
-      
+
       /* If we cannot proceed, return the longest path so far. */
       if (t_transitions.empty() || broken[current_state]) {
         for (int i=(int)path.second.size()-1; i>=last_index; i--) {
@@ -2769,7 +2773,7 @@ namespace hfst {
     unsigned int index = rand() % t_transitions.size();
     fst::StdArc arc = t_transitions.at(index);
     t_transitions.erase(t_transitions.begin()+index);
-    
+
     StateId t_target = arc.nextstate;
 
     path.second.push_back
@@ -2795,7 +2799,7 @@ namespace hfst {
         if ( (rand() % 4) == 0 )
           broken[ t_target ] = 1;
     }
-    
+
     if ( visited[ t_target ] == 1 ) {
       if ( (rand() % 4) == 0 )
         broken[ t_target ] = 1;
@@ -2864,7 +2868,7 @@ namespace hfst {
       {
         HfstTwoLevelPath path = *it;
         StringVector sv = hfst::symbols::to_string_vector(path);
-        
+
         if (fdt.is_valid_string(sv))
           {
             if (filter_fd)
@@ -2902,7 +2906,7 @@ namespace hfst {
               }
             return; // not even possible to extract paths
           }
-        
+
         /* If we extract the same path again, try at most 5 times
            to extract another one. */
         unsigned int i = max_num;
@@ -2920,7 +2924,7 @@ namespace hfst {
         /* Insert the path (another or the same). */
         results.insert(path);
       }
-    
+
     return;
   }
 

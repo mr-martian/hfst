@@ -57,10 +57,11 @@ namespace hfst {
     void ignore(unsigned int);
     fsm * read_transducer();
 
+    size_t stream_tellg();
     char stream_get();
     short stream_get_short();
     void stream_unget(char c);
-    
+
     static bool is_fst(FILE * f);
     static bool is_fst(std::istream &s);
   };
@@ -124,7 +125,7 @@ namespace hfst {
                              fsm * t2);
       static fsm * subtract(fsm * t1,
                             fsm * t2);
-                        
+
       static void extract_paths(fsm * t, hfst::ExtractStringsCb& callback,
                                   int cycles=-1, FdTable<int>* fd=NULL,
                                   bool filter_fd=false);
@@ -147,7 +148,7 @@ namespace hfst {
 
       static fsm * read_net(FILE * file);
       static int write_net(fsm * net, FILE * file);
-                        
+
       static void delete_foma(fsm * net);
       static void print_test(fsm * t);
 

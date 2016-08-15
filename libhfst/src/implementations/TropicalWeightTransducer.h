@@ -72,10 +72,11 @@ namespace implementations
     void ignore(unsigned int);
     StdVectorFst * read_transducer();
 
+    size_t stream_tellg();
     char stream_get();
     short stream_get_short();
     void stream_unget(char c);
-    
+
     static bool is_fst(FILE * f);
     static bool is_fst(istream &s);
   };
@@ -112,7 +113,7 @@ namespace implementations
       bool done(void);
       TropicalWeightState value(void);
     };
- 
+
 
   class TropicalWeightTransition
     {
@@ -141,7 +142,7 @@ namespace implementations
       bool done(void);
       TropicalWeightTransition value(void);
     };
-  
+
 
   class TropicalWeightTransducer
     {
@@ -228,7 +229,7 @@ namespace implementations
 
       static void write_in_att_format(StdVectorFst * t, FILE *ofile);
       static void write_in_att_format_number(StdVectorFst * t, FILE *ofile);
-      
+
       //static void test_minimize(void);
 
       static void write_in_att_format(StdVectorFst * t, std::ostream &os);
@@ -236,7 +237,7 @@ namespace implementations
         (StdVectorFst * t, std::ostream &os);
 
       static StdVectorFst * read_in_att_format(FILE *ifile);
-      
+
       static bool are_equivalent(StdVectorFst *one, StdVectorFst *another);
       static bool is_cyclic(StdVectorFst * t);
       static bool is_automaton(StdVectorFst * t);

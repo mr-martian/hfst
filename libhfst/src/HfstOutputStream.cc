@@ -13,6 +13,7 @@ using std::string;
 
 #include "HfstTransducer.h"
 #include "HfstOutputStream.h"
+#include "serialize.h"
 
 #ifndef MAIN_TEST
 
@@ -141,7 +142,7 @@ namespace hfst
         break;
       case HFST_OLW_TYPE:
         implementation.hfst_ol =
-          new hfst::implementations::HfstOlOutputStream(filename.c_str(), true);
+          new hfst::implementations::HfstOlOutputStream(filename, true);
         break;
       default:
         HFST_THROW(SpecifiedTypeRequiredException);
@@ -149,7 +150,7 @@ namespace hfst
       }
     this->is_open=true;
   }
-  
+
   HfstOutputStream::~HfstOutputStream(void)
   {
     switch (type)
@@ -195,21 +196,25 @@ namespace hfst
 
   void HfstOutputStream::append(std::vector<char> &str, const std::string &s)
   {
-    for (unsigned int i=0; i<s.length(); i++)
+    str.reserve(str.size() + s.size() + 1);
+    for (size_t i=0; i<s.size(); ++i) {
       str.push_back(s[i]);
+    }
     str.push_back('\0');
   }
 
   void HfstOutputStream::write(const std::string &s)
   {
-    for (unsigned int i=0; i<s.length(); i++)
+    for (size_t i=0; i<s.size(); ++i) {
       write(s[i]);
+    }
   }
 
   void HfstOutputStream::write(const std::vector<char> &s)
   {
-    for (unsigned int i=0; i<s.size(); i++)
+    for (size_t i=0; i<s.size(); ++i) {
       write(s[i]);
+    }
   }
 
   void HfstOutputStream::write(const char &c)
@@ -251,7 +256,7 @@ namespace hfst
       case HFST_OLW_TYPE:
         implementation.hfst_ol->write(c);
         break;
-        
+
       default:
         assert(false);
       }
@@ -358,7 +363,7 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
     if (! this->is_open) {
       HFST_THROW(StreamIsClosedException);
     }
-      
+
 
     if (type != transducer.type)
       {
@@ -369,24 +374,21 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
       }
 
     /* Write the HFST header. The header has the following structure:
-       
-       - the first four chars identify an HFST header:  "HFST"
-       - the fifth char is a separator:                 "\0"
-       - the sixth and seventh char tell the length of the rest of the header
-         (beginning after the eighth char)
-       - the eighth char is a separator and is not counted
-         to the header length: "\0"
+
+       - the first five chars identify an HFST header:  "HFST4"
+       - the sixth char is a separator:                 "\0"
+       - the seventh byte starts a varint of the header length
        - the rest of the header consists of pairs of attributes and their values
          that are each separated by a char "\0"
 
        An example:
 
-       "HFST\0"
-       "\0\x1c\0"
+       "HFST4\0"
+       "\x1c\0"
        "version\0"  "3.0\0"
        "type\0"     "FOMA\0"
        "name\0"     "\0"
-       
+
        This is the header of a version 3.0 HFST transducer whose implementation
        type is foma and whose name is not defined, i.e. is the empty string "".
        The two bytes "\0\x1c" that form the length field tell that the length of
@@ -400,12 +402,9 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
        Note: in XFSM format, we never write the HFST header. hfst_format is always
        false if the stream is of XFSM format.
      */
+    std::vector<char> header;
     if (hfst_format) {
-
-      const int MAX_HEADER_LENGTH=65535;
-
       // collect the header data here
-      std::vector<char> header;
       append_hfst_header_data(header); // attributes "version" and "type"
       for (std::map<string,string>::const_iterator prop =
                transducer.props.begin();
@@ -424,42 +423,40 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
       append_implementation_specific_header_data(header, transducer);
 
       // write the field that identifies the header as an HFST header
-      write("HFST");
+      write("HFST4");
       write('\0');
-
-      // write header length using two bytes
-      int header_length = (int)header.size();
-      if (header_length > MAX_HEADER_LENGTH) {
-        //fprintf(stderr, "ERROR: transducer header is too long\n");
-        //exit(1);
-        HFST_THROW_MESSAGE(HfstFatalException, "transducer header is too long");
-      }
-
-      char first_byte = *((char*)(&header_length));
-      char second_byte = *((char*)(&header_length)+1);
-      write(first_byte);
-      write(second_byte);
-      write('\0');
-
-      // write the rest of the header
-      write(header);
     } // if (hfst_format)
 
     switch (type)
       {
 #if HAVE_SFST
       case SFST_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.sfst, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.sfst->write_transducer
           (transducer.implementation.sfst);
         return *this;
 #endif
 #if HAVE_OPENFST
       case TROPICAL_OPENFST_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.tropical_ofst, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.tropical_ofst->write_transducer
           (transducer.implementation.tropical_ofst);
         return *this;
 #if HAVE_OPENFST_LOG
       case LOG_OPENFST_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.log_ofst, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.log_ofst->write_transducer
           (transducer.implementation.log_ofst);
         return *this;
@@ -467,6 +464,11 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
 #endif
 #if HAVE_FOMA
       case FOMA_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.foma, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.foma->write_transducer
           (transducer.implementation.foma);
         return *this;
@@ -474,17 +476,32 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
 #if HAVE_XFSM
         /* This stores the transducer in a list that is written only when flush() is called. */
       case XFSM_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.xfsm, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.xfsm->write_transducer
           (transducer.implementation.xfsm);
         return *this;
 #endif
 #if HAVE_MY_TRANSDUCER_LIBRARY
       case MY_TRANSDUCER_LIBRARY_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.my_transducer_library, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.my_transducer_library->write_transducer
           (transducer.implementation.my_transducer_library);
 #endif
       case HFST_OL_TYPE:
       case HFST_OLW_TYPE:
+        if (hfst_format) {
+          ::write(*implementation.hfst_ol, header.size());
+          write('\0');
+          write(header);
+        }
         implementation.hfst_ol->write_transducer
           (transducer.implementation.hfst_ol);
         return *this;
@@ -546,7 +563,7 @@ HfstOutputStream::append_implementation_specific_header_data(std::vector<char>&,
 int main(int argc, char * argv[])
 {
     std::cout << "Unit tests for " __FILE__ ":" << std::endl;
-    
+
     std::cout << "ok" << std::endl;
     return 0;
 }

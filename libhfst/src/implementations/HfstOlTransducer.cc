@@ -9,6 +9,7 @@
 
 #include <cstring>
 #include "HfstOlTransducer.h"
+#include "../serialize.h"
 
 #ifndef MAIN_TEST
 namespace hfst { namespace implementations
@@ -22,7 +23,7 @@ namespace hfst { namespace implementations
     i_stream(filename.c_str(), std::ios::in | std::ios::binary),
     input_stream(i_stream),weighted(weighted)
   {}
-  
+
   /* Skip the identifier string "HFST_OL_TYPE" or "HFST_OLW_TYPE" */
   void HfstOlInputStream::skip_identifier_version_3_0(void)
   { input_stream.ignore((weighted?14:13)); }
@@ -32,7 +33,7 @@ namespace hfst { namespace implementations
     input_stream.ignore(6);
     skip_identifier_version_3_0();
   }
-  
+
   void HfstOlInputStream::open(void) {}
   void HfstOlInputStream::close(void)
   {
@@ -60,23 +61,23 @@ namespace hfst { namespace implementations
   {
     if(is_eof())
       return false;
-    
+
     if (filename == string())
       { return std::cin.good(); }
     else
       { return input_stream.good(); }
   }
-  
+
   bool HfstOlInputStream::is_fst(void) const
   {
     return (is_fst(input_stream)!=0);
   }
-  
+
   int HfstOlInputStream::is_fst(FILE * f)
   {
     if (f == NULL)
       { return false; }
-    
+
     char buffer[24];
     size_t num_read = fread(buffer, 24, 1, f);
     unsigned int weighted = *((int*)(buffer+20));
@@ -89,20 +90,20 @@ namespace hfst { namespace implementations
       { res = 2; }
     else
       { res = 0; }
-    
+
     for(int i=num_read-1;i>=0;i--)
       { ungetc(buffer[i], f); }
     if(num_read != 24)
       { clearerr(f); }
-    
+
     return res;
   }
-  
+
   int HfstOlInputStream::is_fst(istream &s)
   {
     if(!s.good())
       { return 0; }
-    
+
     char buffer[24];
     s.read(buffer, 24);
     size_t num_read = s.gcount();
@@ -116,13 +117,17 @@ namespace hfst { namespace implementations
       { res = 2; }
     else
       { res = 0; }
-    
+
     for(int i=num_read-1;i>=0;i--)
       { s.putback(buffer[i]); }
     if(num_read != 24)
       { s.clear(); }
-    
+
     return res;
+  }
+
+  size_t HfstOlInputStream::stream_tellg() {
+    return input_stream.tellg();
   }
 
   char HfstOlInputStream::stream_get() {
@@ -163,14 +168,14 @@ void HfstOlInputStream::ignore(unsigned int n)
     catch (const HfstException e)
     { throw e; }
   }
-  
-  
+
+
   HfstOlOutputStream::HfstOlOutputStream(bool weighted):
-    filename(std::string()), output_stream(std::cout), weighted(weighted)
+    filename(), output_stream(std::cout), weighted(weighted)
   {}
 
   HfstOlOutputStream::HfstOlOutputStream(const std::string &str, bool weighted):
-    filename(std::string(str)),o_stream(str.c_str(),std::ios::out | std::ios::binary),
+    filename(str), o_stream(str.c_str(), std::ios::out | std::ios::binary),
     output_stream(o_stream), weighted(weighted)
   {
     if (!output_stream)
@@ -183,9 +188,9 @@ void HfstOlInputStream::ignore(unsigned int n)
       fprintf(stderr, "HfstOlOutputStream: ERROR: failbit set (1).\n");
     transducer->write(output_stream);
   }
-  
-  void HfstOlOutputStream::open(void) {}
-  void HfstOlOutputStream::close(void)
+
+  void HfstOlOutputStream::open() {}
+  void HfstOlOutputStream::close()
   {
     if (filename != string())
       { o_stream.close(); }
@@ -193,16 +198,16 @@ void HfstOlInputStream::ignore(unsigned int n)
 
   void HfstOlOutputStream::write(const char &c)
   {
-    output_stream.put(char(c));
+    output_stream.put(c);
   }
 
- 
+
   hfst_ol::Transducer * HfstOlTransducer::create_empty_transducer(bool weighted)
   { return new hfst_ol::Transducer(weighted); }
-  
+
   bool HfstOlTransducer::is_cyclic(hfst_ol::Transducer* t)
   { return t->get_header().probe_flag(hfst_ol::Cyclic); }
-  
+
   static bool extract_paths
   (hfst_ol::Transducer* t, hfst_ol::TransitionTableIndex s,
    std::map<hfst_ol::TransitionTableIndex,unsigned short> all_visitations,
@@ -224,7 +229,7 @@ void HfstOlInputStream::ignore(unsigned int n)
     {
       lbuffer[lpos]=0;
       ubuffer[upos]=0;
-        
+
       // check for finality
       bool final=false;
       float final_weight=0.0f;
@@ -248,8 +253,8 @@ void HfstOlInputStream::ignore(unsigned int n)
             (t->get_transition(s)).get_weight() : 0.0f;
         }
       }
-      
-      
+
+
       hfst::WeightedPath<float> path(&lbuffer[0],&ubuffer[0],
                                      weight_sum+final_weight);
       hfst::ExtractStringsCb::RetVal ret = callback(path, final);
@@ -260,7 +265,7 @@ void HfstOlInputStream::ignore(unsigned int n)
       }
     }
     */
-    
+
     if (spv.size() != 0)
       {
       // check for finality
@@ -297,7 +302,7 @@ void HfstOlInputStream::ignore(unsigned int n)
           return ret.continueSearch;
         }
       }
-    
+
 
     // sort arcs by number of visitations
     hfst_ol::TransitionTableIndexSet transitions
@@ -318,7 +323,7 @@ void HfstOlInputStream::ignore(unsigned int n)
         sorted_transitions[k] = sorted_transitions[k-1];
       sorted_transitions[i] = *it;
     }
-    
+
     bool res = true;
     for(size_t i=0; i<sorted_transitions.size() && res == true; i++)
     {
@@ -326,9 +331,9 @@ void HfstOlInputStream::ignore(unsigned int n)
         = t->get_transition(sorted_transitions[i]);
       hfst_ol::SymbolNumber input = transition.get_input_symbol();
       hfst_ol::SymbolNumber output = transition.get_output_symbol();
-      
+
       bool added_fd_state = false;
-      
+
       if (fd_state_stack) {
         if(fd_state_stack->back().get_table().get_operation(input) != NULL) {
           fd_state_stack->push_back(fd_state_stack->back());
@@ -344,7 +349,7 @@ void HfstOlInputStream::ignore(unsigned int n)
       /*
       int lp=lpos;
       int up=upos;
-      
+
       if(input != 0 && (!filter_fd ||
                         fd_state_stack->back().get_table().
                         get_operation(input)==NULL))
@@ -384,7 +389,7 @@ void HfstOlInputStream::ignore(unsigned int n)
         ostring = t->get_alphabet().get_symbol_table()[output];
 
       spv.push_back(StringPair(istring, ostring));
-      
+
       res = extract_paths
         (t, transition.get_target(), all_visitations, path_visitations,
          /*lbuffer,lp, ubuffer,up,*/
@@ -394,17 +399,17 @@ void HfstOlInputStream::ignore(unsigned int n)
          callback, cycles, fd_state_stack, filter_fd, spv);
 
       spv.pop_back();
-      
+
       if(added_fd_state)
         fd_state_stack->pop_back();
     }
-    
+
     path_visitations[s]--;
     return res;
   }
-  
+
   static const int BUFFER_START_SIZE = 64;
-  
+
   void HfstOlTransducer::extract_paths
   (hfst_ol::Transducer * t, hfst::ExtractStringsCb& callback,
    int cycles, const FdTable<hfst_ol::SymbolNumber>* fd, bool filter_fd)
@@ -419,12 +424,12 @@ void HfstOlInputStream::ignore(unsigned int n)
       (1, hfst::FdState<hfst_ol::SymbolNumber>(*fd));
 
     StringPairVector spv;
-    
+
     hfst::implementations::extract_paths
       (t,0,all_visitations,path_visitations,/*lbuffer,0,ubuffer,0,*/0.0f,
        callback,cycles,fd_state_stack,filter_fd, spv);
   }
-  
+
   const FdTable<hfst_ol::SymbolNumber>* HfstOlTransducer::
   get_flag_diacritics(hfst_ol::Transducer* t)
   {

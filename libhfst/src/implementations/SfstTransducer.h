@@ -57,6 +57,7 @@ namespace implementations
     bool is_fst(void);
     void ignore(unsigned int);
 
+    size_t stream_tellg();
     char stream_get();
     short stream_get_short();
     void stream_unget(char c);
@@ -64,7 +65,7 @@ namespace implementations
     bool set_implementation_specific_header_data
       (StringPairVector &data, unsigned int index);
     SFST::Transducer * read_transducer();
-    
+
     static bool is_fst(FILE * f);
     static bool is_fst(std::istream &s);
   };
@@ -86,7 +87,7 @@ namespace implementations
   };
 
   class HfstNode2Int {
-    
+
     struct hashf {
       size_t operator()(const SFST::Node *node) const {
     return (size_t)node;
@@ -98,10 +99,10 @@ namespace implementations
       }
     };
     typedef SFST::hash_map<SFST::Node*, int, hashf, equalf> NL;
-    
+
   private:
     NL number;
-    
+
   public:
     int &operator[]( SFST::Node *node ) {
       NL::iterator it=number.find(node);
@@ -110,8 +111,8 @@ namespace implementations
       return it->second;
     };
   };
-  
-  
+
+
   class SfstTransducer
     {
     public:
@@ -176,7 +177,7 @@ namespace implementations
       static bool are_equivalent(SFST::Transducer * t1, SFST::Transducer * t2);
       static bool is_cyclic(SFST::Transducer * t);
       static bool is_automaton(SFST::Transducer * t);
-      
+
       static FdTable<SFST::Character>* get_flag_diacritics(SFST::Transducer * t);
 
       static void print_test(SFST::Transducer *t);

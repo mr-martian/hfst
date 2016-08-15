@@ -22,12 +22,12 @@ namespace hfst { namespace implementations {
   }
     /** Create a FomaInputStream that reads from file \a filename. */
     FomaInputStream::FomaInputStream(const std::string &filename_):
-      filename(std::string(filename_))
+      filename(filename_)
   {
-    if (filename == std::string())
+    if (filename.empty())
       { input_file = stdin; }
     else {
-      input_file = fopen(filename.c_str(),"r");
+      input_file = fopen(filename.c_str(), "rb");
       if (input_file == NULL)
         {
           HFST_THROW(StreamNotReadableException); }
@@ -39,13 +39,16 @@ namespace hfst { namespace implementations {
   {
     if (input_file == NULL)
       { return; }
-    if (filename.c_str()[0] != 0)
-      {
-    fclose(input_file);
-    input_file = NULL;
-      }
+    if (!filename.empty()) {
+      fclose(input_file);
+      input_file = NULL;
+    }
   }
-  
+
+  size_t FomaInputStream::stream_tellg() {
+    return ftell(input_file);
+  }
+
   char FomaInputStream::stream_get() {
     return (char) fgetc(input_file); }
 
@@ -66,22 +69,22 @@ namespace hfst { namespace implementations {
     ungetc(c, input_file);
     return retval;
   }
-  
+
   bool FomaInputStream::is_bad(void)
   {
     return is_eof();
   }
-  
+
   bool FomaInputStream::is_good(void)
   {
     return ! is_bad();
   };
-  
+
   bool FomaInputStream::is_fst(void)
   {
     return is_fst(input_file);
   }
-  
+
   bool FomaInputStream::is_fst(FILE * f)
   {
     if (f == NULL)
@@ -90,7 +93,7 @@ namespace hfst { namespace implementations {
     ungetc(c, f);
     return c == 31 || c == (int)'#';
   }
-  
+
   bool FomaInputStream::is_fst(std::istream &s)
   {
     int c = s.peek();
@@ -109,7 +112,7 @@ namespace hfst { namespace implementations {
       {
         HFST_THROW(NotTransducerStreamException); }
   }
-  
+
   void FomaInputStream::skip_hfst_header(void)
   {
     char hfst_header[6];
@@ -168,7 +171,7 @@ namespace hfst { namespace implementations {
   {
     fputc(c,ofile);
   }
-    
+
     void FomaOutputStream::write_transducer(struct fsm * transducer)
   {
     if (1 != FomaTransducer::write_net(transducer, ofile)) {
@@ -178,18 +181,18 @@ namespace hfst { namespace implementations {
     }
   }
 
-  
+
   fsm * FomaTransducer::create_empty_transducer(void)
   {
     struct fsm * retval = fsm_empty_set();
     return retval;
   }
-  
+
   fsm * FomaTransducer::create_epsilon_transducer(void)
   {
     return fsm_empty_string();
   }
-  
+
   void FomaTransducer::harmonize(struct fsm *net1, struct fsm *net2)
   {
     fsm_merge_sigma(net1, net2);
@@ -221,18 +224,18 @@ namespace hfst { namespace implementations {
                               fsm_symbol(const_cast<char*>(osymbol.c_str())) );
     // should either argument be deleted?
   }
-  
+
   fsm * FomaTransducer::define_transducer(const StringPairVector &spv)
   {
     if (spv.empty())
       return fsm_empty_string();
-    
+
     int state_number=0;
 
     struct fsm_construct_handle *h;
     struct fsm *net;
     h = fsm_construct_init(strdup(std::string("").c_str()));
-    
+
     for (StringPairVector::const_iterator it = spv.begin();
          it != spv.end(); it++)
       {
@@ -241,7 +244,7 @@ namespace hfst { namespace implementations {
         fsm_construct_add_arc(h, state_number, state_number+1, in, out);
         state_number++;
       }
-    
+
     fsm_construct_set_initial(h, 0);
     fsm_construct_set_final(h, state_number);
 
@@ -251,7 +254,7 @@ namespace hfst { namespace implementations {
     sigma_add_special (0, net->sigma);
     sigma_add_special (1, net->sigma);
     sigma_add_special (2, net->sigma);
-    
+
     return net;
   }
 
@@ -259,27 +262,27 @@ namespace hfst { namespace implementations {
   {
     if (sps.empty())
       return fsm_empty_string();
-    
+
     int source=0;
     int target = (cyclic) ? 0 : 1;
 
     struct fsm_construct_handle *h;
     struct fsm *net;
     h = fsm_construct_init(strdup(std::string("").c_str()));
-    
+
     for (StringPairSet::const_iterator it = sps.begin(); it != sps.end(); it++)
       {
     char *in = strdup(it->first.c_str());
     char *out = strdup(it->second.c_str());
     fsm_construct_add_arc(h, source, target, in, out);
       }
-    
+
     fsm_construct_set_initial(h, source);
     fsm_construct_set_final(h, target);
 
     net = fsm_construct_done(h);
     fsm_count(net);
-    
+
     return net;
   }
 
@@ -288,13 +291,13 @@ namespace hfst { namespace implementations {
   {
     if (spsv.empty())
       return fsm_empty_string();
-    
+
     int state_number=0;
 
     struct fsm_construct_handle *h;
     struct fsm *net;
     h = fsm_construct_init(strdup(std::string("").c_str()));
-    
+
     for (std::vector<StringPairSet>::const_iterator it = spsv.begin();
          it != spsv.end(); it++)
       {
@@ -306,13 +309,13 @@ namespace hfst { namespace implementations {
         }
         state_number++;
       }
-    
+
     fsm_construct_set_initial(h, 0);
     fsm_construct_set_final(h, state_number);
 
     net = fsm_construct_done(h);
     fsm_count(net);
-    
+
     return net;
   }
 
@@ -320,79 +323,79 @@ namespace hfst { namespace implementations {
   {
     return fsm_copy(t);
   }
-  
+
   fsm * FomaTransducer::determinize(fsm * t)
   {
     // returns the argument, so a copy is taken here
     return fsm_determinize(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::minimize(fsm * t)
   {
     // returns the argument, so a copy is taken here
     return fsm_minimize(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::remove_epsilons(fsm * t)
   {
     // returns the argument, so a copy is taken here
     return fsm_epsilon_remove(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::repeat_star(fsm * t)
   {
     return fsm_kleene_star(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::repeat_plus(fsm * t)
   {
     return fsm_kleene_plus(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::repeat_n(fsm * t, unsigned int n)
   {
     return fsm_concat_n(fsm_copy(t), n);
   }
-  
+
   fsm * FomaTransducer::repeat_le_n(fsm * t, unsigned int n)
   {
     return fsm_concat_m_n(fsm_copy(t),0,n);
   }
-  
+
   fsm * FomaTransducer::optionalize(fsm * t)
   {
     return fsm_optionality(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::invert(fsm * t)
   {
     return fsm_invert(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::reverse(fsm * t)
   {
     return fsm_reverse(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::extract_input_language(fsm * t)
   {
     // foma does not handle epsilon transducer properly..
     return fsm_upper(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::extract_output_language(fsm * t)
   {
     // foma does not handle epsilon transducer properly..
     return fsm_lower(fsm_copy(t));
   }
-  
+
   fsm * FomaTransducer::substitute(fsm * t,String old_symbol,String new_symbol)
   {
     return fsm_substitute_symbol(t,
                                  strdup(old_symbol.c_str()),
                                  strdup(new_symbol.c_str()));
   }
-  
+
     /* Conversion to HfstBasicTransducer is now used instead. */
   fsm * FomaTransducer::insert_freely(fsm * t, const StringPair &symbol_pair)
   {
@@ -421,7 +424,7 @@ namespace hfst { namespace implementations {
   // marker should be removed from sigma..
   // (HfstBasicTransducer is now used instead)
   }
-  
+
   fsm * FomaTransducer::compose
   (fsm * t1, fsm * t2)
   {
@@ -464,7 +467,7 @@ namespace hfst { namespace implementations {
     fsm_topsort(t);
     return !(t->is_loop_free);
   }
-  
+
     unsigned int FomaTransducer::number_of_states(fsm * t)
     {
       unsigned int retval=0;
@@ -489,7 +492,7 @@ namespace hfst { namespace implementations {
       return retval;
     }
 
-  
+
   static bool extract_paths
   (fsm * t, int state,
    std::map<int,unsigned short> all_visitations,
@@ -507,7 +510,7 @@ namespace hfst { namespace implementations {
     // Increment number of visitations
     all_visitations[state]++;
     path_visitations[state]++;
-    
+
     if (spv.size() != 0)
       {
         //check finality
@@ -521,7 +524,7 @@ namespace hfst { namespace implementations {
                 break;
               }
           }
-        
+
         hfst::HfstTwoLevelPath path(float(0), spv);
         hfst::ExtractStringsCb::RetVal ret = callback(path, final);
         if(!ret.continueSearch || !ret.continuePath)
@@ -530,7 +533,7 @@ namespace hfst { namespace implementations {
             return ret.continueSearch;
           }
       }
-    
+
 
     // find and sort transitions
     std::vector<fsm_state*> sorted_arcs;
@@ -555,9 +558,9 @@ namespace hfst { namespace implementations {
     for(size_t i=0; i<sorted_arcs.size() && res == true; i++)
     {
       fsm_state* arc = sorted_arcs[i];
-      
+
       bool added_fd_state = false;
-      
+
       if (fd_state_stack) {
         if(fd_state_stack->back().get_table().get_operation(arc->in) != NULL) {
           fd_state_stack->push_back(fd_state_stack->back());
@@ -569,13 +572,13 @@ namespace hfst { namespace implementations {
           }
         }
       }
-      
+
       /* Handle spv here. Special symbols (flags, epsilons)
          are always inserted. */
 
       std::string istring("");
       std::string ostring("");
-    
+
       //find the key in sigma
       char* c_in=NULL;
       for(struct sigma* sig=t->sigma; sig!=NULL&&sig->symbol!=NULL;
@@ -618,13 +621,13 @@ namespace hfst { namespace implementations {
       if(added_fd_state)
         fd_state_stack->pop_back();
     }
-    
+
     path_visitations[state]--;
     return res;
   }
-  
+
   static const int BUFFER_START_SIZE = 64;
-  
+
   void FomaTransducer::extract_paths
   (fsm * t, ExtractStringsCb& callback,
    int cycles, FdTable<int>* fd, bool filter_fd)
@@ -636,7 +639,7 @@ namespace hfst { namespace implementations {
       (1, hfst::FdState<int>(*fd));
 
     std::set<int> initial_states;
-    
+
     StringPairVector spv;
     bool res = true;
     for (int i=0; ((t->states)+i)->state_no != -1 && res == true; i++) {
@@ -645,7 +648,7 @@ namespace hfst { namespace implementations {
            == initial_states.end()) ) {
 
         initial_states.insert(((t->states)+i)->state_no);
-                
+
         res = hfst::implementations::extract_paths
           (t, ((t->states)+i)->state_no, all_visitations, path_visitations,
            callback, cycles, fd_state_stack,
@@ -683,7 +686,7 @@ namespace hfst { namespace implementations {
       (void)max_num;
       HFST_THROW(FunctionNotImplementedException);
     }
-  
+
   void FomaTransducer::insert_to_alphabet(fsm * t, const std::string &symbol)
   {
     sigma_add(strdup(symbol.c_str()), t->sigma);
@@ -711,7 +714,7 @@ namespace hfst { namespace implementations {
     alpha.insert(internal_identity);
     return alpha;
   }
-    
+
   unsigned int FomaTransducer::get_symbol_number
   (fsm *t,
    const std::string &symbol)
@@ -847,12 +850,12 @@ namespace hfst { namespace implementations {
 
     /* Read foma transducer . */
     struct fsm * FomaTransducer::read_net(FILE *infile) {
-      
+
     const unsigned int READ_BUF_SIZE=4096;
     char buf[READ_BUF_SIZE];
     struct fsm *net;
     struct fsm_state *fsm;
-    
+
     char *new_symbol;
     int i, items, new_symbol_number, laststate, lineint[5], *cm;
     char last_final = 0;
@@ -860,11 +863,11 @@ namespace hfst { namespace implementations {
     if (io_gets(infile, buf) == 0) {
         return NULL;
     }
-    
+
     char* empty = strdup("");
     net = fsm_create(empty);
     free(empty);
-    
+
     if (strcmp(buf, "##foma-net 1.0##") != 0) {
         printf("File format error foma!\n");
         return NULL;
@@ -1062,7 +1065,7 @@ static inline int explode_line (char *buf, int *values) {
             net->is_loop_free,
             net->is_completed,
             net->name);
-    
+
     /* Sigma */
     fprintf(outfile, "%s","##sigma##\n");
     for (sigma = net->sigma; sigma != NULL && sigma->number != -1;
@@ -1142,7 +1145,7 @@ int main(int argc, char * argv[])
     fsm * a = FomaTransducer::define_transducer("a");
     fsm * a2 = FomaTransducer::repeat_n(a, 2);
     (void)a2;
-    
+
     std::cout << std::endl << "ok" << std::endl;
     return EXIT_SUCCESS;
 }

@@ -672,6 +672,22 @@ AC_CHECK_HEADERS([unordered_set], [], [],
 #endif
 ])
 
+# Check for arithmetic right shifting
+AC_CACHE_CHECK([whether the right shift operator is an arithmetic right shift],
+        arithmetic_right_shift,
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+[[#if ((-4 >> 1) != -2)
+#error "No simple arithmetic right shift"
+#endif]], [[]])],
+        [arithmetic_right_shift=yes],
+        [arithmetic_right_shift=no]))
+if test "x$arithmetic_right_shift" = "xyes"
+then
+  AC_DEFINE(HAVE_ARITHMETIC_RIGHT_SHIFT, 1, [Define if the right shift operator is an arithmetic shift])
+else
+  AC_MSG_ERROR(["need arithmetic right shift for now"])
+fi
+
 AS_IF([test "x$ac_cv_header_unordered_map" = "xno"],
             [AC_MSG_ERROR(["<unordered_map> not found, it is needed in c++ standard 11 (or higher)"])])
 AS_IF([test "x$ac_cv_header_unordered_set" = "xno"],
