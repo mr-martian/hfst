@@ -104,9 +104,10 @@ AnalysisApplicator::apply()
       stream_error(std::string("Found unexpected character ")+next_token.character+" unescaped in stream");
 
     if(surface_form.size() > 0 && state.is_final() &&
-       !token_stream.is_alphabetic(token_stream.at(token_stream.get_pos()-1)))
-       // if the next token is alphabetic, ignore final states here
-       // since it can't be a word boundary anyway
+       (!token_stream.is_alphabetic(token_stream.at(token_stream.get_pos()-2)) ||
+        !token_stream.is_alphabetic(token_stream.at(token_stream.get_pos()-1))))
+       // if we're between 2 alphabetic tokens, then this can't be a word boundary
+       // so don't bother recording it
     {
       LookupPathSet finals = state.get_finals_set();
       if (caps_mode == DictionaryCase || caps_mode == CaseSensitiveDictionaryCase)
