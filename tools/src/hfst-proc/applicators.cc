@@ -103,26 +103,28 @@ AnalysisApplicator::apply()
     if(next_token.type == ReservedCharacter)
       stream_error(std::string("Found unexpected character ")+next_token.character+" unescaped in stream");
 
-        if(surface_form.size() > 0 && state.is_final())
-        {
-          LookupPathSet finals = state.get_finals_set();
+    if(surface_form.size() > 0 && state.is_final() &&
+       !token_stream.is_alphabetic(token_stream.at(token_stream.get_pos()-1)))
+       // if the next token is alphabetic, ignore final states here
+       // since it can't be a word boundary anyway
+    {
+      LookupPathSet finals = state.get_finals_set();
       if (caps_mode == DictionaryCase || caps_mode == CaseSensitiveDictionaryCase)
-        {
-              analyzed_forms = formatter.process_finals(finals,
-                                                        Unknown);
-        }
+      {
+        analyzed_forms = formatter.process_finals(finals, Unknown);
+      }
       else
-        {
-          analyzed_forms = formatter.process_finals(finals,
-                                                                                token_stream.get_capitalization_state(surface_form));
-        }
-          last_stream_location = token_stream.get_pos()-1;
+      {
+        analyzed_forms = formatter.process_finals(finals,
+                              token_stream.get_capitalization_state(surface_form));
+      }
+      last_stream_location = token_stream.get_pos()-1;
 
-          if(printDebuggingInformationFlag)
-            std::cout << "Final paths (" << finals.size() << ") found and saved, stream location is " << last_stream_location << std::endl;
-        }
+      if(printDebuggingInformationFlag)
+        std::cout << "Final paths (" << finals.size() << ") found and saved, stream location is " << last_stream_location << std::endl;
+    }
 
-        state.step(token_stream.to_symbol(next_token), caps_mode);
+    state.step(token_stream.to_symbol(next_token), caps_mode);
 
     if(printDebuggingInformationFlag)
       std::cout << "After stepping, there are " << state.num_active() << " active paths" << std::endl;
