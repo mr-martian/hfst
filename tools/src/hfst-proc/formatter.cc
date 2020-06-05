@@ -288,8 +288,9 @@ CGOutputFormatter::process_final(const SymbolNumberVector& symbols, Capitalizati
     }
 
     // grab the base form without tags
+    size_t end = (compound_split < tag_start ? compound_split : tag_start);
     res << token_stream.get_alphabet().symbols_to_string(
-      SymbolNumberVector(symbols.begin()+start_pos,symbols.begin()+tag_start), caps);
+      SymbolNumberVector(symbols.begin()+start_pos,symbols.begin()+end), caps);
 
     // look for compounding. Don't output the tags for non-final segments
     if(compound_split != symbols.size())
