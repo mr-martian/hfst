@@ -251,6 +251,20 @@ AC_ARG_ENABLE([disjunct],
 			  [enable_disjunct=$enableval],
 			  [if test x$enable_no_tools != xno; then enable_disjunct=no; else enable_disjunct=yes; fi])
 AM_CONDITIONAL([WANT_DISJUNCT], [test x$enable_disjunct != xno])
+AC_ARG_ENABLE([dixcomp],
+			  [AS_HELP_STRING([--enable-dixcomp],
+							  [build dixcomp tool @<:@default=no@:>@])],
+			  [enable_dixcomp=$enableval],
+			  [enable_dixcomp=$enable_all_tools])
+AM_CONDITIONAL([WANT_DIXCOMP], [test x$enable_disjunct != xno])
+
+m4_define([required_libxml_version], [2.6.17])
+PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= required_libxml_version])
+
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
+AC_CHECK_LIB(xml2, xmlReaderForFile)
+
 AC_ARG_ENABLE([expand_equivalences],
 			  [AS_HELP_STRING([--enable-expand-equivalences],
 							  [build acx tool @<:@default=no@:>@])],

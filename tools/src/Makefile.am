@@ -18,7 +18,7 @@
 SUBDIRS=hfst-proc hfst-twolc hfst-tagger parsers
 AUTOMAKE_OPTIONS=std-options subdir-objects
 LDADD = $(top_builddir)/libhfst/src/libhfst.la $(ICU_LIBS)
-AM_CPPFLAGS = -I${top_srcdir}/libhfst/src -I${top_srcdir}/libhfst/src/parsers -I${top_srcdir}/tools/src/parsers -Wno-sign-compare ${GLIB_CPPFLAGS} ${ICU_CPPFLAGS}
+AM_CPPFLAGS = -I${top_srcdir}/libhfst/src -I${top_srcdir}/libhfst/src/parsers -I${top_srcdir}/tools/src/parsers -Wno-sign-compare ${GLIB_CPPFLAGS} ${ICU_CPPFLAGS} ${LIBXML_CFLAGS}
 AM_CXXFLAGS = -Wno-deprecated -Wno-sign-compare
 
 # sort alphabetically:
@@ -45,6 +45,9 @@ MAYBE_DETERMINIZE=hfst-determinize$(EXEEXT)
 endif
 if WANT_DISJUNCT
 MAYBE_DISJUNCT=hfst-disjunct$(EXEEXT)
+endif
+if WANT_DIXCOMP
+MAYBE_DIXCOMP=hfst-dixcomp$(EXEEXT)
 endif
 if WANT_MULTIPLY
 MAYBE_MULTIPLY=hfst-multiply$(EXEEXT)
@@ -185,7 +188,8 @@ noinst_HEADERS= \
 	inc/globals-common.h      inc/globals-unary.h \
 	hfst-file-to-mem.h \
 	hfst-tool-metadata.h hfst-optimized-lookup.h \
-	guessify_fst.h generate_model_forms.h
+	guessify_fst.h generate_model_forms.h \
+	DixCompiler.h
 # sort in abc order
 # finish with xyz
 # see <http://en.wikipedia.org/wiki/Alphabets#Alphabetic_order> for details
@@ -212,7 +216,8 @@ bin_PROGRAMS= \
 			 $(MAYBE_FORMAT)                     \
 			 $(MAYBE_COMPOSE_INTERSECT) $(MAYBE_NAME) $(MAYBE_PAIR_TEST)\
 			 $(MAYBE_TRAVERSE) $(MAYBE_GUESSIFY) $(MAYBE_GUESS) \
-			 $(MAYBE_INFO) $(MAYBE_EXPAND_EQUIVALENCES)
+			 $(MAYBE_INFO) $(MAYBE_EXPAND_EQUIVALENCES) \
+			 $(MAYBE_DIXCOMP)
 
 HFST_COMMON_SRC=hfst-program-options.cc hfst-commandline.cc hfst-tool-metadata.cc
 
@@ -226,6 +231,7 @@ hfst_concatenate_SOURCES=hfst-concatenate.cc $(HFST_COMMON_SRC)
 hfst_conjunct_SOURCES=hfst-conjunct.cc $(HFST_COMMON_SRC)
 hfst_determinize_SOURCES=hfst-determinize.cc $(HFST_COMMON_SRC)
 hfst_disjunct_SOURCES=hfst-disjunct.cc $(HFST_COMMON_SRC)
+hfst_dixcomp_SOURCES=hfst-dixcomp.cc DixCompiler.cc $(HFST_COMMON_SRC)
 hfst_multiply_SOURCES=hfst-multiply.cc $(HFST_COMMON_SRC)
 hfst_expand_equivalences_SOURCES=hfst-expand-equivalences.cc $(HFST_COMMON_SRC)
 hfst_edit_metadata_SOURCES=hfst-edit-metadata.cc $(HFST_COMMON_SRC)
