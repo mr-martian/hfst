@@ -83,6 +83,7 @@ AnalysisApplicator::apply()
 {
   LookupState state(transducer);
   size_t last_stream_location = 0;
+  size_t space_location = 0;
   TokenVector surface_form;
   ProcResult analyzed_forms;
 
@@ -102,6 +103,9 @@ AnalysisApplicator::apply()
     }
     if(next_token.type == ReservedCharacter)
       stream_error(std::string("Found unexpected character ")+next_token.character+" unescaped in stream");
+
+    if(space_location == 0 && token_stream.is_space(next_token))
+      space_location = token_stream.get_pos()-1;
 
     if(surface_form.size() > 0 && state.is_final() &&
        (!token_stream.is_alphabetic(token_stream.at(token_stream.get_pos()-2)) ||
@@ -174,6 +178,11 @@ AnalysisApplicator::apply()
 
           int revert_count = (surface_form.size()-word_length+
                               next_token_is_part_of_word) ? 0 : 1;
+          if(space_location != 0)
+          {
+            revert_count = token_stream.diff_prev(space_location);
+            word_length -= revert_count - 1;
+          }
 
           if(printDebuggingInformationFlag)
             std::cout << "word_length=" << word_length << ", surface_form.size()=" << surface_form.size()
@@ -198,6 +207,7 @@ AnalysisApplicator::apply()
       state.reset();
       surface_form.clear();
       analyzed_forms.clear();
+      space_location = 0;
     }
   }
 
