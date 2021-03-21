@@ -220,7 +220,7 @@ struct fsm *fsm_rewrite(struct rewrite_set *all_rules) {
 		}
 	    }
 	    if (rules->arrow_type & ARROW_SHORTEST_MATCH) {
-		if (rules->arrow_type & ARROW_RIGHT) {		
+		if (rules->arrow_type & ARROW_RIGHT) {
 		    C = fsm_union(C, rewr_notleftmost(rb, rewrite_upper(rb, fsm_copy(rules->left)), rule_number, rules->arrow_type));
 		    C = fsm_union(C, rewr_notshortest(rb, rewrite_upper(rb, fsm_copy(rules->left)), rule_number));
 		}
@@ -326,7 +326,7 @@ struct fsm *rewr_notleftmost(struct rewrite_batch *rb, struct fsm *lang, int rul
     rulenum = fsm_minimize(fsm_concat(fsm_concat(fsm_symbol("@O@"), fsm_concat(fsm_identity(), fsm_concat(fsm_identity(), fsm_identity()))), fsm_concat(fsm_kleene_star(fsm_concat(fsm_symbol("@O@"), fsm_concat(fsm_identity(), fsm_concat(fsm_identity(), fsm_identity())))), fsm_concat(fsm_union(fsm_symbol("@I[@"), fsm_symbol("@I[]@")), fsm_concat(fsm_symbol(rb->namestrings[rule_number-1]), fsm_universal())))));
     nl = fsm_intersect(nl, rulenum);
     if (arrow_type & ARROW_RIGHT) {
-	flt = fsm_parse_regex("[? ? ? ?]* [? ? [?-\"@0@\"] ?]", NULL, NULL); 
+	flt = fsm_parse_regex("[? ? ? ?]* [? ? [?-\"@0@\"] ?]", NULL, NULL);
     } else {
 	flt = fsm_parse_regex("[? ? ? ?]* [? ? ? [?-\"@0@\"]]", NULL, NULL);
     }

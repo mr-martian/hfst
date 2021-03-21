@@ -11,16 +11,16 @@ This package contains the following command line tools for [32|64]-bit Mac OS X:
   - hfst-pmatch2fst
 
 
-For more info about the tools, see their KitWiki pages:
+For more info about the tools, see their wiki pages:
 
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstXfst>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstLexc>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstTwolC>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstLookUp>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstOptimizedLookup>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstProc>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstPmatch>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstPmatch2Fst>
+  <https://github.com/hfst/hfst/wiki/HfstXfst>
+  <https://github.com/hfst/hfst/wiki/HfstLexc>
+  <https://github.com/hfst/hfst/wiki/HfstTwolC>
+  <https://github.com/hfst/hfst/wiki/HfstLookUp>
+  <https://github.com/hfst/hfst/wiki/HfstOptimizedLookup>
+  <https://github.com/hfst/hfst/wiki/HfstProc>
+  <https://github.com/hfst/hfst/wiki/HfstPmatch>
+  <https://github.com/hfst/hfst/wiki/HfstPmatch2Fst>
 
 or run hfst-TOOLNAME --help.
 

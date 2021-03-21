@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2010 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +29,7 @@ struct fsm *fsm_coaccessible(struct fsm *net) {
 
     struct invtable *inverses, *temp_i, *temp_i_prev, *current_ptr;
   int i, j, s, t, *coacc, current_state, markcount, *mapping, terminate, new_linecount, new_arccount, *added, old_statecount;
-  
+
 
   struct fsm_state *fsm;
 
@@ -52,7 +52,7 @@ struct fsm *fsm_coaccessible(struct fsm *net) {
     s = (fsm+i)->state_no;
     t = (fsm+i)->target;
     if (t != -1 && s != t) {
-      
+
       if (((inverses+t)->state) == -1) {
 	(inverses+t)->state = s;
       } else {
@@ -105,7 +105,7 @@ struct fsm *fsm_coaccessible(struct fsm *net) {
 	*(mapping+i) = j;
       }
     }
-    
+
     for (i=0,j=0; (fsm+i)->state_no != -1; i++) {
       if (i > 0 && (fsm+i)->state_no != (fsm+i-1)->state_no && (fsm+i-1)->final_state && !*(added+((fsm+i-1)->state_no))) {
 	add_fsm_arc(fsm, j++, *(mapping+((fsm+i-1)->state_no)), -1, -1, -1, 1, (fsm+i-1)->start_state);
@@ -142,7 +142,7 @@ struct fsm *fsm_coaccessible(struct fsm *net) {
     if (new_linecount == 0) {
       add_fsm_arc(fsm, j++, 0, -1, -1, -1, -1, -1);
     }
-  
+
     add_fsm_arc(fsm, j, -1, -1, -1, -1, -1, -1);
     if (markcount == 0) {
       /* We're dealing with the empty language */
@@ -157,7 +157,7 @@ struct fsm *fsm_coaccessible(struct fsm *net) {
   }
 
   /* printf("Markccount %i \n",markcount); */
-  
+
   for (i = 0; i < old_statecount ; i++) {
       for (temp_i = inverses+i; temp_i != NULL ; ) {
           temp_i_prev = temp_i;

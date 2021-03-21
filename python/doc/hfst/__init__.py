@@ -54,7 +54,7 @@
 #
 #\section links Links
 #
-#   - <a href="https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstHome">Documentation</a> for the HFST project
+#   - <a href="https://github.com/hfst/hfst/wiki">Documentation</a> for the HFST project
 #
 #   - Documentation for releases <a href="https://hfst.github.io/python/next_release/index.html">3.12.2 (upcoming)</a>, <a href="https://hfst.github.io/python/3.12.1/index.html">3.12.1</a>, <a href="https://hfst.github.io/python/3.12.0/index.html">3.12.0</a> and <a href="https://hfst.github.io/python/3.11.0/index.html">3.11.0</a>.
 #
@@ -2529,7 +2529,7 @@ class ImplementationType:
 #
 # \section using_hfst Using HFST in your own code
 #
-# After <a href="https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstPython">installing</a> HFST on your computer, start python and execute <code>import hfst</code>.
+# After <a href="https://github.com/hfst/hfst/wiki/HfstPython">installing</a> HFST on your computer, start python and execute <code>import hfst</code>.
 #
 # For example, the following simple program
 #
@@ -2663,7 +2663,7 @@ class ImplementationType:
 ## @page HfstWithSFSTOpenFstAndFoma.html Using HFST with SFST, OpenFst and foma
 #
 # A binary HfstTransducer consists of an HFST header (more on HFST headers on the
-# <a href="https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstTransducerHeader">
+# <a href="https://github.com/hfst/hfst/wiki/HfstTransducerHeader">
 # wiki pages</a>) and the transducer of the backend implementation.
 # If you want to write backend transducers as such, you can specify it with
 # the <i>hfst_format</i> keyword argument of HfstOutputStream constructor:
@@ -2740,7 +2740,7 @@ class ImplementationType:
 # \endverbatim
 #
 # For more information on HFST transducer formats and conversions, see the
-# <a href="https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstTransducerFormats">
+# <a href="https://github.com/hfst/hfst/wiki/HfstTransducerFormats">
 # wiki pages</a>.
 #
 #

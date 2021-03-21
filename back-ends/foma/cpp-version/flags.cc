@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2011 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,11 +92,11 @@ struct fsm *flag_eliminate(struct fsm *net, char *name) {
 
         if ((name == NULL || strcmp(f->name,name) == 0) &&
             (f->type | FLAG_UNIFY | FLAG_REQUIRE | FLAG_DISALLOW | FLAG_EQUAL)) {
-            
+
             succeed_flags = fsm_empty_set();
             fail_flags = fsm_empty_set();
             self = flag_create_symbol(f->type, f->name, f->value);
-            
+
             for (ff = flags, flag = 0; ff != NULL; ff = ff->next) {
                 fstatus = flag_build(f->type, f->name, f->value, ff->type, ff->name, ff->value);
                 if (fstatus == FAIL) {
@@ -113,7 +113,7 @@ struct fsm *flag_eliminate(struct fsm *net, char *name) {
         if (flag) {
             if (f->type == FLAG_REQUIRE) {
                 newfilter = fsm_complement(fsm_concat(fsm_optionality(fsm_concat(fsm_universal(), fail_flags)), fsm_concat(fsm_complement(fsm_contains(succeed_flags)), fsm_concat(self, fsm_universal()))));
-                
+
             } else {
                 newfilter = fsm_complement(fsm_contains(fsm_concat(fail_flags,fsm_concat(fsm_complement(fsm_contains(succeed_flags)),self))));
             }
@@ -186,12 +186,12 @@ int flag_build(int ftype, char *fname, char *fvalue, int fftype, char *ffname, c
     selfnull = 0; /* If current flag has no value, e.g. @R.A@ */
     if (strcmp(fname,ffname) != 0)
         return NONE;
-    
+
     if (fvalue == NULL) {
         fvalue = "";
         selfnull = 1;
     }
-    
+
     if (ffvalue == NULL)
         ffvalue = "";
 
@@ -272,9 +272,9 @@ void flag_purge (struct fsm *net, char *name) {
     fsm = net->states;
     for (i=0; i<sigmasize; i++)
         *(ftable+i)=0;
-    
+
     for (sigma = net->sigma; sigma != NULL && sigma->number != -1; sigma = sigma->next) {
-        
+
         if (flag_check(sigma->symbol)) {
             if (name == NULL) {
                 *(ftable+(sigma->number)) = 1;
@@ -318,7 +318,7 @@ struct flags *flag_extract (struct fsm *net) {
 	    flagst = (struct flags*)xxmalloc(sizeof(struct flags));
             flagst->next = flags;
             flags = flagst;
-            
+
             flags->type  = flag_get_type(sigma->symbol);
             flags->name  = flag_get_name(sigma->symbol);
             flags->value = flag_get_value(sigma->symbol);
@@ -328,14 +328,14 @@ struct flags *flag_extract (struct fsm *net) {
 }
 
 int flag_check(char *s) {
-    
+
     /* We simply simulate this regex (where ND is not dot) */
     /* "@" [U|P|N|R|E|D] "." ND+ "." ND+ "@" | "@" [D|R|C] "." ND+ "@" */
     /* and return 1 if it matches */
 
     int i;
     i = 0;
-    
+
     if (*(s+i) == '@') { i++; goto s1; } return 0;
  s1:
     if (*(s+i) == 'C') { i++; goto s4; }
@@ -443,9 +443,9 @@ struct fsm *flag_twosided(struct fsm *net) {
   struct fsm_state *fsm;
   struct sigma *sigma;
   int i, j, tail, *isflag, maxsigma, maxstate, newarcs, change;
- 
+
   /* Enforces twosided flag diacritics */
-  
+
   /* Mark flag symbols */
   maxsigma = sigma_max(net->sigma);
   isflag = (int*)xxcalloc(maxsigma+1, sizeof(int));

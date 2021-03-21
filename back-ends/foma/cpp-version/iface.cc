@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2015 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <wchar.h>
@@ -106,7 +106,7 @@ struct g_v {
 };
 
 char warranty[] = "\nThis program is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License version 2 as published by\nthe Free Software Foundation.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\nYou should have received a copy of the GNU General Public License\nalong with this program.  If not, see <http://www.gnu.org/licenses/>.\n\n";
- 
+
 struct global_help {
     char *name;
     char *help;
@@ -340,7 +340,7 @@ void iface_apropos(char *s) {
 
 void iface_help_search(char *s) {
     struct global_help *gh;
-    
+
     for (gh = global_help; gh->name != NULL; gh++) {
         if (strstr(gh->name,s) != NULL || strstr(gh->help,s) != NULL) {
             printf("##\n");
@@ -408,7 +408,7 @@ int iface_apply_file(char *infilename, char *outfilename, int direction) {
         perror("Error opening file");
         return 1;
     }
-    
+
     if (outfilename == NULL) {
         OUTFILE = stdout;
     } else {
@@ -432,7 +432,7 @@ int iface_apply_file(char *infilename, char *outfilename, int direction) {
             result = apply_down(ah,inword);
         else
             result = apply_up(ah,inword);
-        
+
         if (result == NULL) {
             fprintf(OUTFILE,"???\n");
             continue;
@@ -486,7 +486,7 @@ void iface_apply_up(char *word) {
         return;
     }
     ah = stack_get_ah();
-    
+
     iface_apply_set_params(ah);
     result = apply_up(ah, word);
 
@@ -1157,7 +1157,7 @@ void iface_test_equivalent() {
         two = fsm_copy(stack_find_second()->fsm);
 	fsm_count(one);
 	fsm_count(two);
-	
+
 	//if (one->arccount != two->arccount || one->statecount != two->statecount || one->finalcount != two->finalcount) {
 	//iface_print_bool(0);
 	    //} else {
@@ -1626,12 +1626,12 @@ static int print_dot(struct fsm *net, char *filename) {
     FILE *dotfile;
     int i, j, linelen;
     short *finals, *printed;
-    
+
     fsm_count(net);
-    
+
     finals = xxmalloc(sizeof(short)*net->statecount);
     stateptr = net->states;
-    
+
     for (i=0; (stateptr+i)->state_no != -1; i++) {
         if ((stateptr+i)->final_state == 1) {
             *(finals+((stateptr+i)->state_no)) = 1;
@@ -1639,7 +1639,7 @@ static int print_dot(struct fsm *net, char *filename) {
             *(finals+((stateptr+i)->state_no)) = 0;
         }
     }
-    
+
     if (filename != NULL) {
         dotfile = fopen(filename,"w");
     } else {
@@ -1685,7 +1685,7 @@ static int print_dot(struct fsm *net, char *filename) {
       fprintf(dotfile,"\"];\n");
   }
 
-  
+
   xxfree(finals);
   xxfree(printed);
   fprintf(dotfile, "}\n");
@@ -1711,7 +1711,7 @@ static int view_net(struct fsm *net) {
   sprintf(tmpstr,"/usr/bin/open -a Graphviz %s &",dotname);
   if (system(tmpstr) == -1)
       printf("Error opening viewer.\n");
-  
+
 #endif /* __APPLE__ */
 
 #ifndef __APPLE__
@@ -1726,6 +1726,6 @@ static int view_net(struct fsm *net) {
 #endif /* __APPLE__ */
 
   xxfree(dotname);
-  
+
   return(1);
 }

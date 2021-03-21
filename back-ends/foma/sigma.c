@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2012 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation. */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <string.h>
 #include <stdlib.h>
@@ -174,7 +174,7 @@ void sigma_cleanup (struct fsm *net, int force) {
     int i,j,first,maxsigma,*attested;
     struct fsm_state *fsm;
     struct sigma *sig, *sig_prev, *sign;
-    
+
     if (force == 0) {
         if (sigma_find_number(IDENTITY, net->sigma) != -1)
             return;
@@ -321,7 +321,7 @@ int sigma_substitute(char *symbol, char *sub, struct sigma *sigma) {
 }
 
 int sigma_find(char *symbol, struct sigma *sigma) {
-    
+
     if (sigma == NULL || sigma->number == -1) {
         return -1;
     }
@@ -384,7 +384,7 @@ int sigma_sort(struct fsm *net) {
   struct ssort *ssort;
   struct sigma *sigma;
   struct fsm_state *fsm_state;
-  
+
   size = sigma_max(net->sigma);
   if (size < 0) { return 1; }
   ssort = xxmalloc(sizeof(struct ssort)*size);

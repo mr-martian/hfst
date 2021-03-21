@@ -11,16 +11,16 @@ This package contains the following command line tools for 64-bit Windows:
   - hfst-pmatch2fst
 
 
-For more info about the tools, see their KitWiki pages:
+For more info about the tools, see their wiki pages:
 
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstXfst>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstLexc>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstTwolC>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstLookUp>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstOptimizedLookup>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstProc>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstPmatch>
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstPmatch2Fst>
+  <https://github.com/hfst/hfst/wiki/HfstXfst>
+  <https://github.com/hfst/hfst/wiki/HfstLexc>
+  <https://github.com/hfst/hfst/wiki/HfstTwolC>
+  <https://github.com/hfst/hfst/wiki/HfstLookUp>
+  <https://github.com/hfst/hfst/wiki/HfstOptimizedLookup>
+  <https://github.com/hfst/hfst/wiki/HfstProc>
+  <https://github.com/hfst/hfst/wiki/HfstPmatch>
+  <https://github.com/hfst/hfst/wiki/HfstPmatch2Fst>
 
 or run hfst-TOOLNAME --help in command prompt.
 
@@ -83,7 +83,7 @@ The command 'exit' exits the program and closes the console (if a new one was
 opened) or returns to the console where the program was started.
 
 When run from the command line, a number of options are available. For more
-info, see the page <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstXfst>.
+info, see the page <https://github.com/hfst/hfst/wiki/HfstXfst>.
 Two important options related to input and output processing are:
 
   -F, --scriptfile=FILE      Read commands from FILE, and quit

@@ -218,7 +218,7 @@ be printed, ``--quiet`` may be used to suppress non-fatal warnings.
 
 .. _ABNF: http://tools.ietf.org/html/rfc5234
 .. _RFC 2822: http://www.faqs.org/rfcs/rfc2822.html
-.. _corpus cvs repository: https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstCvsRepository
+.. _corpus cvs repository: https://github.com/hfst/hfst/wiki/HfstCvsRepository
 .. _GNU programming standards: http://www.gnu.org/prep/standards/standards.html
 .. _HFST: http://www.ling.helsinki.fi/kieliteknologia/tutkimus/hfst/
 .. _hfst download directory: http://www.ling.helsinki.fi/kieliteknologia/tutkimus/hfst/downloads.shtml

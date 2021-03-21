@@ -193,7 +193,7 @@ void help(void)
       "parameter -p ( --pairs ), which suplies the test case file to the\n"
       "program. If it is omitted, the program will run interactively.\n\n"
       "More info on "
-"<https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstPairTest>\n\n"
+"<https://github.com/hfst/hfst/wiki/HfstPairTest>\n\n"
       "Report bugs to <hfst-bugs@helsinki.fi>\n"
 );
 }

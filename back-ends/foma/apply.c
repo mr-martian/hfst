@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2015 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,7 +119,7 @@ static void apply_force_clear_stack(struct apply_handle *h) {
 char *apply_enumerate(struct apply_handle *h) {
 
     char *result = NULL;
-    
+
     if (h->last_net == NULL || h->last_net->finalcount == 0) {
 	return (NULL);
     }
@@ -227,7 +227,7 @@ char *apply_updown(struct apply_handle *h, char *word) {
 
     if (h->last_net == NULL || h->last_net->finalcount == 0)
         return (NULL);
-    
+
     if (word == NULL) {
         h->iterate_old = 1;
         result = apply_net(h);
@@ -245,7 +245,7 @@ char *apply_updown(struct apply_handle *h, char *word) {
 }
 
 char *apply_down(struct apply_handle *h, char *word) {
-    
+
     h->mode = DOWN;
     if (h->index_in) {
 	h->indexed = 1;
@@ -600,7 +600,7 @@ int apply_binarysearch(struct apply_handle *h) {
 	}
 	return 0;
     }
-     
+
     for (;;)  {
 	if (thisptr > lastptr) { return 0; }
 	midptr = (thisptr+lastptr)/2;
@@ -626,7 +626,7 @@ int apply_follow_next_arc(struct apply_handle *h) {
     char *fname, *fvalue;
     int eatupi, eatupo, symin, symout, fneg;
     int vcount, marksource, marktarget;
-    
+
     /* Here we follow three possible search strategies:        */
     /* (1) if the state in question has an index, we use that  */
     /* (2) if the state is binary searchable, we use that      */
@@ -646,7 +646,7 @@ int apply_follow_next_arc(struct apply_handle *h) {
 		symin = (h->gstates+h->curr_ptr)->out;
 		symout = (h->gstates+h->curr_ptr)->in;
 	    }
-	    
+
 	    marksource = *(h->marks+(h->gstates+h->ptr)->state_no);
 	    marktarget = *(h->marks+(h->gstates+(*(h->statemap+(h->gstates+h->curr_ptr)->target)))->state_no);
 	    eatupi = apply_match_length(h, symin);
@@ -683,18 +683,18 @@ int apply_follow_next_arc(struct apply_handle *h) {
 		    symin = (h->gstates+h->curr_ptr)->out;
 		    symout = (h->gstates+h->curr_ptr)->in;
 		}
-		
+
 		marksource = *(h->marks+(h->gstates+h->ptr)->state_no);
 		marktarget = *(h->marks+(h->gstates+(*(h->statemap+(h->gstates+h->curr_ptr)->target)))->state_no);
-		
+
 		eatupi = apply_match_length(h, symin);
 		if (eatupi != -1 && -1-(h->ipos)-eatupi != marktarget) {
 		    if ((eatupi = apply_match_str(h, symin, h->ipos)) != -1) {
 			eatupo = apply_append(h, h->curr_ptr, symout);
-			
+
 			/* Push old position */
 			apply_stack_push(h, marksource, NULL, NULL, 0);
-			
+
 			/* Follow arc */
 			h->ptr = *(h->statemap+(h->gstates+h->curr_ptr)->target);
 			h->ipos += eatupi;
@@ -716,7 +716,7 @@ int apply_follow_next_arc(struct apply_handle *h) {
 	}
     } else {
 	for (h->curr_ptr = h->ptr; (h->gstates+h->curr_ptr)->state_no == (h->gstates+h->ptr)->state_no && (h->gstates+h->curr_ptr)-> in != -1; (h->curr_ptr)++) {
-	    
+
 	    /* Select one random arc to follow out of all outgoing arcs */
 	    if ((h->mode & RANDOM) == RANDOM) {
 		vcount = 0;
@@ -729,7 +729,7 @@ int apply_follow_next_arc(struct apply_handle *h) {
 		    h->curr_ptr = h->ptr;
 		}
 	    }
-	    
+
 	    if (((h->mode) & DOWN) == DOWN) {
 		symin = (h->gstates+h->curr_ptr)->in;
 		symout = (h->gstates+h->curr_ptr)->out;
@@ -737,7 +737,7 @@ int apply_follow_next_arc(struct apply_handle *h) {
 		symin = (h->gstates+h->curr_ptr)->out;
 		symout = (h->gstates+h->curr_ptr)->in;
 	    }
-	    
+
 	    marksource = *(h->marks+(h->gstates+h->ptr)->state_no);
 	    marktarget = *(h->marks+(h->gstates+(*(h->statemap+(h->gstates+h->curr_ptr)->target)))->state_no);
 
@@ -747,7 +747,7 @@ int apply_follow_next_arc(struct apply_handle *h) {
 	    if ((eatupi = apply_match_str(h, symin, h->ipos)) != -1) {
 		eatupo = apply_append(h, h->curr_ptr, symout);
 		if (h->obey_flags && h->has_flags && ((h->flag_lookup+symin)->type & (FLAG_UNIFY|FLAG_CLEAR|FLAG_POSITIVE|FLAG_NEGATIVE))) {
-		    
+
 		    fname = (h->flag_lookup+symin)->name;
 		    fvalue = h->oldflagvalue;
 		    fneg = h->oldflagneg;
@@ -755,10 +755,10 @@ int apply_follow_next_arc(struct apply_handle *h) {
 		    fname = fvalue = NULL;
 		    fneg = 0;
 		}
-		
+
 		/* Push old position */
 		apply_stack_push(h, marksource, fname, fvalue, fneg);
-		
+
 		/* Follow arc */
 		h->ptr = *(h->statemap+(h->gstates+h->curr_ptr)->target);
 		h->ipos += eatupi;
@@ -852,14 +852,14 @@ void apply_set_iptr(struct apply_handle *h) {
     if ((idx = ((h->mode) & DOWN) == DOWN ? (h->index_in) : (h->index_out)) == NULL) {
 	return;
     }
- 
+
     h->iptr = NULL;
     h->state_has_index = 0;
     stateno = (h->gstates+h->ptr)->state_no;
     if (stateno < 0) {
 	return;
     }
-   
+
     sidx = *(idx + stateno);
     if (sidx == NULL) { return; }
     seeksym = (h->sigmatch_array+h->ipos)->signumber;
@@ -888,7 +888,7 @@ char *apply_net(struct apply_handle *h) {
 /*        "run."  If we reach a state seen twice without consuming input, we    */
 /*        terminate that branch of the search.                                  */
 /*        As we pop a position, we also unmark the state we came from.          */
- 
+
 /*     2. If the graph has flags, we push the previous flag value when          */
 /*        traversing a flag-modifying arc (P,U,N, or C).  This is because a     */
 /*        flag may have been set during the previous "run" and may not apply.   */
@@ -913,7 +913,7 @@ char *apply_net(struct apply_handle *h) {
     if (h->has_flags) {
 	apply_clear_flags(h);
     }
-    
+
     /* "The use of four-letter words like goto can occasionally be justified */
     /*  even in the best of company." Knuth (1974).                          */
 
@@ -958,20 +958,20 @@ int apply_append(struct apply_handle *h, int cptr, int sym) {
 
     char *astring, *bstring, *pstring;
     int symin, symout, len, alen, blen, idlen;
-    
+
     symin = (h->gstates+cptr)->in;
     symout = (h->gstates+cptr)->out;
     astring = ((h->sigs)+symin)->symbol;
     alen =  ((h->sigs)+symin)->length;
     bstring = ((h->sigs)+symout)->symbol;
     blen =  ((h->sigs)+symout)->length;
-    
+
     while (alen + blen + h->opos + 2 + strlen(h->separator) >= h->outstringtop) {
 	//    while (alen + blen + h->opos + 3 >= h->outstringtop) {
 	h->outstring = xxrealloc(h->outstring, sizeof(char) * ((h->outstringtop) * 2));
 	(h->outstringtop) *= 2;
     }
-    
+
     if ((h->has_flags) && !h->show_flags && (h->flag_lookup+symin)->type) {
 	astring = ""; alen = 0;
     }
@@ -982,7 +982,7 @@ int apply_append(struct apply_handle *h, int cptr, int sym) {
 	/* Print both sides separated by colon */
 	/* if we're printing "words" */
 	if (((h->mode) & (UPPER | LOWER)) == (UPPER|LOWER)) {
-	    
+
 	    if (astring == bstring) {
 		strcpy(h->outstring+h->opos, astring);
 		len = alen;
@@ -996,10 +996,10 @@ int apply_append(struct apply_handle *h, int cptr, int sym) {
 		len = alen+blen+strlen(h->separator);
 	    }
 	}
-	
+
 	/* Print one side only */
 	if (((h->mode) & (UPPER|LOWER)) != (UPPER|LOWER)) {
-	    
+
 	    if (symin == EPSILON) {
 		astring = ""; alen = 0;
 	    }
@@ -1111,7 +1111,7 @@ int apply_match_str(struct apply_handle *h, int symbol, int position) {
     if (symbol == EPSILON) {
 	return 0;
     }
-    
+
     /* If symbol is a flag, we need to check consistency */
     if (h->has_flags && (h->flag_lookup+symbol)->type) {
 	if (!h->obey_flags) {
@@ -1123,7 +1123,7 @@ int apply_match_str(struct apply_handle *h, int symbol, int position) {
 	    return -1;
 	}
     }
-    
+
     if (position >= h->current_instring_length) {
 	return -1;
     }
@@ -1222,7 +1222,7 @@ void apply_mark_flagstates(struct apply_handle *h) {
 void apply_create_sigarray(struct apply_handle *h, struct fsm *net) {
     struct sigma *sig;
     int i, maxsigma;
-    
+
     maxsigma = sigma_max(net->sigma);
     h->sigma_size = maxsigma+1;
     // Default size created at init, resized later if necessary
@@ -1395,7 +1395,7 @@ int apply_check_flag(struct apply_handle *h, int type, char *name, char *value) 
     }
     h->oldflagvalue = flist->value;
     h->oldflagneg = flist->neg;
-    
+
     if (type == FLAG_UNIFY) {
 	if (flist->value == NULL) {
 	    flist->value = xxstrdup(value);

@@ -12,6 +12,21 @@ if WANT_FOMA
 noinst_LTLIBRARIES = libfoma.la
 endif
 
+lex.yy.c: regex.l regex.h
+	$(LEX) -8 regex.l
+
+lex.lexc.c: lexc.l
+	$(LEX) -8 --prefix=lexc $<
+
+lex.interface.c: interface.l
+	$(LEX) -8 --prefix=interface $<
+
+lex.cmatrix.c: cmatrix.l
+	$(LEX) -8 --prefix=cmatrix $<
+
+regex.c regex.h: regex.y constructions.o
+	$(YACC) --defines=regex.h --output=regex.c $<
+
 libfoma_la_SOURCES = int_stack.c define.c determinize.c apply.c \
         rewrite.c lexcread.c topsort.c flags.c minimize.c reverse.c \
         extract.c sigma.c structures.c constructions.c \

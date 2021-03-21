@@ -71,7 +71,7 @@ extern FILE* message_out;
  */
 extern const char* hfst_tool_version;
 /**
- * @brief set @c hfst_tool_wikiname to name of the kitwiki page for this tool.
+ * @brief set @c hfst_tool_wikiname to name of the wiki page for this tool.
  */
 extern const char* hfst_tool_wikiname;
 
@@ -157,7 +157,8 @@ void print_version();
  */
 void print_short_help();
 
-#define KITWIKI_URL "https://kitwiki.csc.fi/twiki/bin/view/KitWiki/"
+constexpr auto WIKI_URL = "https://github.com/hfst/hfst/wiki";
+
 /**
  * @brief print link to wiki pages.
  */
@@ -171,7 +172,7 @@ void print_report_bugs();
 /* command line argument handling */
 
 /** successful return value for argument parsing routine */
-#define EXIT_CONTINUE 42
+constexpr auto EXIT_CONTINUE = 42;
 
 /**
  * @brief define function for parsing whole command line.

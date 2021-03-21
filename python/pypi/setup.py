@@ -6,7 +6,7 @@ Setup for creating PIP packages for HFST Python bindings.
 Before running setup, recursively copy directories 'libhfst/src'
 and 'back-ends' from HFST C++ source code under the directory where
 setup is run (on linux and OS X with copy-files.sh and on windows with
-copy-files-win.sh). Make sure that the following C++ files 
+copy-files-win.sh). Make sure that the following C++ files
 from 'libhfst/src/parsers' have been generated from flex/yacc files
 before copying (on linux and OS X by running 'make' and on windows
 with 'compile-parsers-win.sh' located in 'libhfst/src/parsers'):
@@ -349,7 +349,7 @@ libhfst_module = Extension('_libhfst',
                            )
 
 setup(name = 'hfst',
-      version = '3.15.2.0_beta',
+      version = '3.15.4.0_beta',
       author = 'HFST team',
       author_email = 'hfst-bugs@helsinki.fi',
       url = 'http://hfst.github.io/',

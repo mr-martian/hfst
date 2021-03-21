@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2014 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -97,7 +97,7 @@ void fsm_state_end_state() {
 
 void fsm_state_add_arc(int state_no, int in, int out, int target, int final_state, int start_state) {
     struct fsm_state *cptr;
-    
+
     if (in != out) {
         arity = 2;
     }
@@ -125,7 +125,7 @@ void fsm_state_add_arc(int state_no, int in, int out, int target, int final_stat
         (slookup+(ssize*in)+out)->mainloop = mainloop;
         (slookup+(ssize*in)+out)->target = target;
     }
-    
+
     current_trans = 1;
     if (current_fsm_linecount >= current_fsm_size) {
         current_fsm_size *= 2;
@@ -267,7 +267,7 @@ void fsm_construct_add_arc(struct fsm_construct_handle *handle, int source, int 
 unsigned int fsm_construct_hash_sym(char *symbol) {
     register unsigned int hash;
     hash = 0;
-    
+
     while (*symbol != '\0')
         hash = hash +  *symbol++;
     return (hash % SIGMA_HASH_SIZE);
@@ -318,7 +318,7 @@ void fsm_construct_copy_sigma(struct fsm_construct_handle *handle, struct sigma 
 	/* Insert into list */
 	symdup = xxstrdup(symbol);
 	((handle->fsm_sigma_list)+symnum)->symbol = symdup;
-	
+
 	/* Insert into hashtable */
 	hash = fsm_construct_hash_sym(symbol);
 	fh = (handle->fsm_sigma_hash)+hash;
@@ -450,7 +450,7 @@ struct fsm *fsm_construct_done(struct fsm_construct_handle *handle) {
     sprintf(net->name, "%X",rand());
     xxfree(net->sigma);
     fsm_state_close(net);
-    
+
     net->sigma = fsm_construct_convert_sigma(handle);
     if (handle->name != NULL) {
         strncpy(net->name, handle->name, 40);
@@ -509,7 +509,7 @@ struct fsm_read_handle *fsm_read_init(struct fsm *net) {
 
     num_states = net->statecount;
     lookuptable = xxcalloc(num_states, sizeof(unsigned char));
-    
+
     num_initials = num_finals = 0;
 
     handle = xxcalloc(1,sizeof(struct fsm_read_handle));
@@ -523,7 +523,7 @@ struct fsm_read_handle *fsm_read_init(struct fsm *net) {
                 *(lookuptable+sno) |= 1;
                 num_initials++;
             }
-            
+
         }
         if ((fsm+i)->final_state) {
             if (!(*(lookuptable+sno) & 2)) {
@@ -539,7 +539,7 @@ struct fsm_read_handle *fsm_read_init(struct fsm *net) {
 	}
 	laststate = (fsm+i)->state_no;
     }
-    
+
     finals_head = xxcalloc(num_finals+1,sizeof(int));
     initials_head = xxcalloc(num_initials+1,sizeof(int));
 
@@ -556,11 +556,11 @@ struct fsm_read_handle *fsm_read_init(struct fsm *net) {
     }
     *(initials_head+j) = -1;
     *(finals_head+k) = -1;
-    
+
     handle->finals_head = finals_head;
     handle->initials_head = initials_head;
     handle->states_head = states_head;
-    
+
     handle->fsm_sigma_list = sigma_to_list(net->sigma);
     handle->sigma_list_size = sigma_max(net->sigma)+1;
     handle->arcs_head = fsm;

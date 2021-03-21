@@ -89,109 +89,109 @@ check_PROGRAMS=FstBuilder LexicalModelBuilder ModelBuilder \
                SequenceModelComponentPair SequenceTagger
 
 FstBuilder_SOURCES=$(BUILD_MODEL_SRC)/FstBuilder.cc
-FstBuilder_LDADD=string_handling.o FstBuilder.o \
+FstBuilder_LDADD=$(BUILD_MODEL_SRC)/string_handling.o $(BUILD_MODEL_SRC)/FstBuilder.o \
                  $(top_srcdir)/libhfst/src/libhfst.la
 FstBuilder_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 LexicalModelBuilder_SOURCES=$(BUILD_MODEL_SRC)/LexicalModelBuilder.cc
-LexicalModelBuilder_LDADD=string_handling.o FstBuilder.o ModelBuilder.o \
-			  WeightedStringVectorCollection.o \
-	                  LexicalModelBuilder.o \
+LexicalModelBuilder_LDADD=$(BUILD_MODEL_SRC)/string_handling.o $(BUILD_MODEL_SRC)/FstBuilder.o $(BUILD_MODEL_SRC)/ModelBuilder.o \
+			  $(BUILD_MODEL_SRC)/WeightedStringVectorCollection.o \
+	                  $(BUILD_MODEL_SRC)/LexicalModelBuilder.o \
                           $(top_srcdir)/libhfst/src/libhfst.la
 LexicalModelBuilder_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 SequenceModelBuilder_SOURCES=$(BUILD_MODEL_SRC)/SequenceModelBuilder.cc
-SequenceModelBuilder_LDADD=string_handling.o FstBuilder.o ModelBuilder.o \
-			  WeightedStringVectorCollection.o \
-	                  SequenceModelBuilder.o \
+SequenceModelBuilder_LDADD=$(BUILD_MODEL_SRC)/string_handling.o $(BUILD_MODEL_SRC)/FstBuilder.o $(BUILD_MODEL_SRC)/ModelBuilder.o \
+			  $(BUILD_MODEL_SRC)/WeightedStringVectorCollection.o \
+	                  $(BUILD_MODEL_SRC)/SequenceModelBuilder.o \
                           $(top_srcdir)/libhfst/src/libhfst.la
 SequenceModelBuilder_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 ModelBuilder_SOURCES=$(BUILD_MODEL_SRC)/ModelBuilder.cc
-ModelBuilder_LDADD=string_handling.o FstBuilder.o ModelBuilder.o \
-		   WeightedStringVectorCollection.o \
+ModelBuilder_LDADD=$(BUILD_MODEL_SRC)/string_handling.o $(BUILD_MODEL_SRC)/FstBuilder.o $(BUILD_MODEL_SRC)/ModelBuilder.o \
+		   $(BUILD_MODEL_SRC)/WeightedStringVectorCollection.o \
                    $(top_srcdir)/libhfst/src/libhfst.la
 ModelBuilder_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 WeightedStringVectorCollection_SOURCES=\
 	$(BUILD_MODEL_SRC)/WeightedStringVectorCollection.cc
-WeightedStringVectorCollection_LDADD=string_handling.o \
-	WeightedStringVectorCollection.o \
+WeightedStringVectorCollection_LDADD=$(BUILD_MODEL_SRC)/string_handling.o \
+	$(BUILD_MODEL_SRC)/WeightedStringVectorCollection.o \
 	$(top_srcdir)/libhfst/src/libhfst.la
 WeightedStringVectorCollection_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 TaggerBuilder_SOURCES=$(BUILD_MODEL_SRC)/TaggerBuilder.cc
-TaggerBuilder_LDADD=string_handling.o TaggerBuilder.o \
-	LexicalModelBuilder.o SequenceModelBuilder.o \
-	WeightedStringVectorCollection.o ModelBuilder.o FstBuilder.o \
+TaggerBuilder_LDADD=$(BUILD_MODEL_SRC)/string_handling.o $(BUILD_MODEL_SRC)/TaggerBuilder.o \
+	$(BUILD_MODEL_SRC)/LexicalModelBuilder.o $(BUILD_MODEL_SRC)/SequenceModelBuilder.o \
+	$(BUILD_MODEL_SRC)/WeightedStringVectorCollection.o $(BUILD_MODEL_SRC)/ModelBuilder.o $(BUILD_MODEL_SRC)/FstBuilder.o \
 	$(top_srcdir)/libhfst/src/libhfst.la
 TaggerBuilder_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 string_handling_SOURCES=$(BUILD_MODEL_SRC)/string_handling.cc
 
-string_handling_LDADD=string_handling.o $(top_srcdir)/libhfst/src/libhfst.la \
+string_handling_LDADD=$(BUILD_MODEL_SRC)/string_handling.o $(top_srcdir)/libhfst/src/libhfst.la \
 		      unit_test_aux.o
 string_handling_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 AcyclicAutomaton_SOURCES=$(USE_MODEL_SRC)/AcyclicAutomaton.cc
 
-AcyclicAutomaton_LDADD=AcyclicAutomaton.o $(top_srcdir)/libhfst/src/libhfst.la\
-		       SequenceModelComponent.o unit_test_aux.o
+AcyclicAutomaton_LDADD=$(USE_MODEL_SRC)/AcyclicAutomaton.o $(top_srcdir)/libhfst/src/libhfst.la\
+		       $(USE_MODEL_SRC)/SequenceModelComponent.o unit_test_aux.o
 AcyclicAutomaton_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 DelayedSequenceModelComponent_SOURCES= \
                        $(USE_MODEL_SRC)/DelayedSequenceModelComponent.cc
 
-DelayedSequenceModelComponent_LDADD=DelayedSequenceModelComponent.o \
+DelayedSequenceModelComponent_LDADD=$(USE_MODEL_SRC)/DelayedSequenceModelComponent.o \
                        $(top_srcdir)/libhfst/src/libhfst.la \
-		       SequenceModelComponent.o unit_test_aux.o
+		       $(USE_MODEL_SRC)/SequenceModelComponent.o unit_test_aux.o
 DelayedSequenceModelComponent_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 NewLexicalModel_SOURCES=$(USE_MODEL_SRC)/NewLexicalModel.cc
 
-NewLexicalModel_LDADD=NewLexicalModel.o $(top_srcdir)/libhfst/src/libhfst.la \
+NewLexicalModel_LDADD=$(USE_MODEL_SRC)/NewLexicalModel.o $(top_srcdir)/libhfst/src/libhfst.la \
 		      unit_test_aux.o
 NewLexicalModel_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 SentenceTagger_SOURCES=$(USE_MODEL_SRC)/SentenceTagger.cc
 
-SentenceTagger_LDADD=SentenceTagger.o $(top_srcdir)/libhfst/src/libhfst.la \
-		     DelayedSequenceModelComponent.o SequenceModelComponent.o \
-		     SentenceTransducer.o NewLexicalModel.o \
-                     SequenceModelComponentPair.o unit_test_aux.o \
-                     SequenceTagger.o AcyclicAutomaton.o
+SentenceTagger_LDADD=$(USE_MODEL_SRC)/SentenceTagger.o $(top_srcdir)/libhfst/src/libhfst.la \
+		     $(USE_MODEL_SRC)/DelayedSequenceModelComponent.o $(USE_MODEL_SRC)/SequenceModelComponent.o \
+		     $(USE_MODEL_SRC)/SentenceTransducer.o $(USE_MODEL_SRC)/NewLexicalModel.o \
+                     $(USE_MODEL_SRC)/SequenceModelComponentPair.o unit_test_aux.o \
+                     $(USE_MODEL_SRC)/SequenceTagger.o $(USE_MODEL_SRC)/AcyclicAutomaton.o
 
 SentenceTagger_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 SentenceTransducer_SOURCES=$(USE_MODEL_SRC)/SentenceTransducer.cc
 
-SentenceTransducer_LDADD=SentenceTransducer.o \
+SentenceTransducer_LDADD=$(USE_MODEL_SRC)/SentenceTransducer.o \
                        $(top_srcdir)/libhfst/src/libhfst.la \
-		       SequenceModelComponent.o unit_test_aux.o
+		       $(USE_MODEL_SRC)/SequenceModelComponent.o unit_test_aux.o
 SentenceTransducer_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 SequenceModelComponent_SOURCES=$(USE_MODEL_SRC)/SequenceModelComponent.cc\
 			       unit_test_aux.cc
-SequenceModelComponent_LDADD=SequenceModelComponent.o \
+SequenceModelComponent_LDADD=$(USE_MODEL_SRC)/SequenceModelComponent.o \
                              $(top_srcdir)/libhfst/src/libhfst.la
 SequenceModelComponent_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 SequenceModelComponentPair_SOURCES= \
                                 $(USE_MODEL_SRC)/SequenceModelComponentPair.cc
 
-SequenceModelComponentPair_LDADD=SequenceModelComponentPair.o \
+SequenceModelComponentPair_LDADD=$(USE_MODEL_SRC)/SequenceModelComponentPair.o \
                                  $(top_srcdir)/libhfst/src/libhfst.la \
-                                 DelayedSequenceModelComponent.o \
-				 SequenceModelComponent.o unit_test_aux.o
+                                 $(USE_MODEL_SRC)/DelayedSequenceModelComponent.o \
+				 $(USE_MODEL_SRC)/SequenceModelComponent.o unit_test_aux.o
 SequenceModelComponentPair_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 SequenceTagger_SOURCES=$(USE_MODEL_SRC)/SequenceTagger.cc
 
-SequenceTagger_LDADD=SequenceTagger.o $(top_srcdir)/libhfst/src/libhfst.la\
-		     SequenceModelComponent.o SentenceTransducer.o \
-                     unit_test_aux.o AcyclicAutomaton.o \
-                     SequenceModelComponentPair.o \
-		     DelayedSequenceModelComponent.o
+SequenceTagger_LDADD=$(USE_MODEL_SRC)/SequenceTagger.o $(top_srcdir)/libhfst/src/libhfst.la\
+		     $(USE_MODEL_SRC)/SequenceModelComponent.o $(USE_MODEL_SRC)/SentenceTransducer.o \
+                     unit_test_aux.o $(USE_MODEL_SRC)/AcyclicAutomaton.o \
+                     $(USE_MODEL_SRC)/SequenceModelComponentPair.o \
+		     $(USE_MODEL_SRC)/DelayedSequenceModelComponent.o
 SequenceTagger_CXXFLAGS=-DMAIN_TEST -Wno-deprecated
 
 TESTS=$(check_PROGRAMS)

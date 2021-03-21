@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.  */
-/*     Copyright © 2008-2014 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -474,7 +474,7 @@ void lexc_set_current_word(char *name) {
 #define LEV_DOWN 0
 #define LEV_LEFT 1
 #define LEV_DIAG 2
-    
+
 void lexc_medpad() {
     int i, j, x, y, s1len, s2len, left, down, diag, dir;
 
@@ -483,7 +483,7 @@ void lexc_medpad() {
 	*(cwordin+1) = *(cwordout+1) = -1;
 	return;
     }
-    
+
     for (i = 0, j = 0; cwordin[i] != -1; i++) {
     	if (cwordin[i] == EPSILON) {
     	    continue;
@@ -501,12 +501,12 @@ void lexc_medpad() {
     	j++;
     }
     cwordout[j] = -1;
-    
+
     for (i = 0; cwordin[i] != -1; i++) { }
     s1len = i;
     for (i = 0; cwordout[i] != -1; i++) { }
     s2len = i;
-    
+
     int matrix[s1len+2][s2len+2];
     int dirmatrix[s1len+2][s2len+2];
 
@@ -683,7 +683,7 @@ void lexc_add_mc(char *symbol) {
             mc = mcnew;
         if (mcprev != NULL)
             mcprev->next = mcnew;
-        
+
         s = sigma_add(symbol, lexsigma);
         mchashval = (unsigned int) ((unsigned char) *(symbol)) * 256 + (unsigned int) ((unsigned char) *(symbol+1));
         lexc_add_sigma_hash(symbol, s);
@@ -720,7 +720,7 @@ void lexc_add_word() {
         lexc_add_network();
         return;
     }
-            
+
     /* find source, dest */
     sourcestate = clexicon->state;
     deststate = ctarget->state;
@@ -728,11 +728,11 @@ void lexc_add_word() {
     for (i=0; *(cwordin+i) != -1; i++) {}
     len = i;
     maxlen = len > maxlen ? len : maxlen;
-    
+
     /* We follow the source state if the symbols are the same */
     /* To merge prefixes */
     for (follow = 1, i=0; *(cwordin+i) != -1; i++) {
-        
+
         if (follow == 1) {
             for (trans = sourcestate->trans; trans != NULL ; trans = trans->next) {
                 if (trans->in == *(cwordin+i) && trans->out == *(cwordout+i) && trans->target->lexstate == NULL) {
@@ -771,7 +771,7 @@ void lexc_add_word() {
 
         sourcestate = newtrans->target;
     breakout:;
-        
+
     }
     return;
 }
@@ -927,7 +927,7 @@ void lexc_merge_states() {
             }
         }
     }
-    
+
     for (i = maxlen; i >= 1 ; i--) {
         /* printf("Analyzing: [%i]...",i); fflush(stdout); */
         for (currentl = (lenlist+i); currentl != NULL; currentl = currentl->next) {
@@ -951,7 +951,7 @@ void lexc_merge_states() {
     }
 
     /* Go through statelist and remove merged states and free states, trans */
-    
+
     for (s = statelist, sprev = NULL; s != NULL; s = s->next) {
         for (t = s->state->trans, tprev = NULL; t != NULL; tprev = t, t = t->next) {
             t->target = t->target->merge_with;
@@ -1076,7 +1076,7 @@ struct fsm *lexc_to_fsm() {
     lexc_cleanup();
     sigma_cleanup(net,0);
     sigma_sort(net);
-    
+
 #ifdef ORIGINAL
     fprintf(stderr,"Determinizing...\n");
     fflush(stdout);

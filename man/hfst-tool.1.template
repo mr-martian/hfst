@@ -74,10 +74,10 @@ Report bugs to <hfst\-bugs@helsinki.fi> or directly to our bug tracker at:
 <https://sourceforge.net/tracker/?atid=1061990&group_id=224521&func=browse>
 .br
 hfst\-frobnicate home page:
-<https://kitwiki.csc.fi/twiki/bin/view/KitWiki//HfstCommandLine>
+<https://github.com/hfst/hfst/wiki/HfstCommandLine>
 .br
 General help using HFST software:
-<https://kitwiki.csc.fi/twiki/bin/view/KitWiki//HfstHome>
+<https://github.com/hfst/hfst/wiki>
 .SH NOTES
 The automaton to frobnicate must be indeterminate.
 .SH CAVEATS

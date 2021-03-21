@@ -48,6 +48,8 @@ MAYBE_DISJUNCT=hfst-disjunct$(EXEEXT)
 endif
 if WANT_DIXCOMP
 MAYBE_DIXCOMP=hfst-dixcomp$(EXEEXT)
+if WANT_PRIORITY_DISJUNCT
+MAYBE_PRIORITY_DISJUNCT=hfst-priority-disjunct$(EXEEXT)
 endif
 if WANT_MULTIPLY
 MAYBE_MULTIPLY=hfst-multiply$(EXEEXT)
@@ -87,6 +89,9 @@ MAYBE_HEAD=hfst-head$(EXEEXT)
 endif
 if WANT_INFO
 MAYBE_INFO=hfst-info$(EXEEXT)
+endif
+if WANT_INSERT_FREELY
+MAYBE_INSERT_FREELY=hfst-insert-freely$(EXEEXT)
 endif
 if WANT_INVERT
 MAYBE_INVERT=hfst-invert$(EXEEXT)
@@ -130,8 +135,14 @@ endif
 if WANT_PRUNE_ALPHABET
 MAYBE_PRUNE_ALPHABET=hfst-prune-alphabet$(EXEEXT)
 endif
+if WANT_PUSH_LABELS
+MAYBE_PUSH_LABELS=hfst-push-labels$(EXEEXT)
+endif
 if WANT_PUSH_WEIGHTS
 MAYBE_PUSH_WEIGHTS=hfst-push-weights$(EXEEXT)
+endif
+if WANT_REALIGN
+MAYBE_REALIGN=hfst-realign$(EXEEXT)
 endif
 if WANT_REGEXP2FST
 MAYBE_REGEXP2FST=hfst-regexp2fst$(EXEEXT)
@@ -197,16 +208,17 @@ bin_PROGRAMS= \
 			 $(MAYBE_AFFIX_GUESSIFY)              \
 			 $(MAYBE_COMPARE) $(MAYBE_COMPOSE) $(MAYBE_CONCATENATE)     \
 			 $(MAYBE_CONJUNCT) $(MAYBE_DETERMINIZE) $(MAYBE_DISJUNCT)   \
-			 $(MAYBE_MULTIPLY) $(MAYBE_EDIT_METADATA)                  \
+			 $(MAYBE_PRIORITY_DISJUNCT) $(MAYBE_MULTIPLY) $(MAYBE_EDIT_METADATA)                  \
 			 $(MAYBE_FORMAT) $(MAYBE_ELIMINATE_FLAGS) $(MAYBE_FST2FST) \
 			 $(MAYBE_FST2STRINGS)      \
 			 $(MAYBE_FST2TXT) $(MAYBE_GREP) $(MAYBE_HEAD)               \
-			 $(MAYBE_INVERT)                                            \
+			 $(MAYBE_INSERT_FREELY) $(MAYBE_INVERT)                                            \
 			 $(MAYBE_LOOKUP) $(MAYBE_FLOOKUP) $(MAYBE_MINIMIZE) $(MAYBE_NAME)            \
 			 $(MAYBE_OPTIMIZED_LOOKUP) $(MAYBE_PMATCH)                  \
 			 $(MAYBE_PMATCH2FST) $(MAYBE_TOKENIZE)                         \
 			 $(MAYBE_PROJECT) $(MAYBE_PRUNE_ALPHABET)                   \
-			 $(MAYBE_PUSH_WEIGHTS) $(MAYBE_REGEXP2FST)                  \
+			 $(MAYBE_PUSH_LABELS) $(MAYBE_PUSH_WEIGHTS) $(MAYBE_REALIGN) \
+			 $(MAYBE_REGEXP2FST)                  \
 			 $(MAYBE_REMOVE_EPSILONS) $(MAYBE_REPEAT) $(MAYBE_REVERSE)  \
 			 $(MAYBE_REWEIGHT) $(MAYBE_SHUFFLE)                         \
 			 $(MAYBE_SPLIT) $(MAYBE_STRINGS2FST) $(MAYBE_STRIP_HEADER)  \
@@ -232,6 +244,7 @@ hfst_conjunct_SOURCES=hfst-conjunct.cc $(HFST_COMMON_SRC)
 hfst_determinize_SOURCES=hfst-determinize.cc $(HFST_COMMON_SRC)
 hfst_disjunct_SOURCES=hfst-disjunct.cc $(HFST_COMMON_SRC)
 hfst_dixcomp_SOURCES=hfst-dixcomp.cc DixCompiler.cc $(HFST_COMMON_SRC)
+hfst_priority_disjunct_SOURCES=hfst-priority-disjunct.cc $(HFST_COMMON_SRC)
 hfst_multiply_SOURCES=hfst-multiply.cc $(HFST_COMMON_SRC)
 hfst_expand_equivalences_SOURCES=hfst-expand-equivalences.cc $(HFST_COMMON_SRC)
 hfst_edit_metadata_SOURCES=hfst-edit-metadata.cc $(HFST_COMMON_SRC)
@@ -246,6 +259,7 @@ hfst_guessify_SOURCES=hfst-guessify.cc guessify_fst.cc $(HFST_COMMON_SRC)
 hfst_head_SOURCES=hfst-head.cc $(HFST_COMMON_SRC)
 hfst_info_SOURCES=hfst-info.cc $(HFST_COMMON_SRC)
 hfst_invert_SOURCES=hfst-invert.cc $(HFST_COMMON_SRC)
+hfst_insert_freely_SOURCES=hfst-insert-freely.cc $(HFST_COMMON_SRC)
 hfst_lexc_wrapper_SOURCES=hfst-lexc-wrapper.cc lexc-readline-ui.cc $(HFST_COMMON_SRC)
 hfst_lexc_SOURCES=hfst-lexc-compiler.cc $(HFST_COMMON_SRC)
 hfst_lookup_SOURCES=hfst-lookup.cc $(HFST_COMMON_SRC)
@@ -258,7 +272,9 @@ hfst_pmatch_SOURCES=hfst-pmatch.cc $(HFST_COMMON_SRC)
 hfst_tokenize_SOURCES=hfst-tokenize.cc $(HFST_COMMON_SRC)
 hfst_project_SOURCES=hfst-project.cc $(HFST_COMMON_SRC)
 hfst_prune_alphabet_SOURCES=hfst-prune-alphabet.cc $(HFST_COMMON_SRC)
+hfst_push_labels_SOURCES=hfst-push-labels.cc $(HFST_COMMON_SRC)
 hfst_push_weights_SOURCES=hfst-push-weights.cc $(HFST_COMMON_SRC)
+hfst_realign_SOURCES=hfst-realign.cc $(HFST_COMMON_SRC)
 hfst_regexp2fst_SOURCES=hfst-regexp2fst.cc hfst-file-to-mem.cc $(HFST_COMMON_SRC)
 hfst_pmatch2fst_SOURCES=hfst-pmatch2fst.cc $(HFST_COMMON_SRC)
 hfst_remove_epsilons_SOURCES=hfst-remove-epsilons.cc $(HFST_COMMON_SRC)
@@ -288,6 +304,7 @@ install-exec-hook:
 		$(LN_S) -f hfst-calculate$(EXEEXT) hfst-sfstpl2fst$(EXEEXT) && \
 		$(LN_S) -f hfst-summarize$(EXEEXT) hfst-summarise$(EXEEXT) && \
 		$(LN_S) -f hfst-disjunct$(EXEEXT) hfst-union$(EXEEXT) && \
+		$(LN_S) -f hfst-priority-disjunct$(EXEEXT) hfst-priority-union$(EXEEXT) && \
 		$(LN_S) -f hfst-tokenize$(EXEEXT) hfst-proc2$(EXEEXT) && \
 		$(LN_S) -f hfst-tokenize$(EXEEXT) hfst-tokenise$(EXEEXT)
 

@@ -19,7 +19,7 @@
 HFST_NAME=hfst
 HFST_MAJOR=3
 HFST_MINOR=15
-HFST_EXTENSION=2
+HFST_EXTENSION=4
 HFST_VERSION=$HFST_MAJOR.$HFST_MINOR.$HFST_EXTENSION
 
 ### When the VERSION is INCREMENTED, REMEMBER to increment the LONGVERSION too.
@@ -28,12 +28,12 @@ HFST_VERSION=$HFST_MAJOR.$HFST_MINOR.$HFST_EXTENSION
 LIBHFST_NAME=hfst
 LIBHFST_MAJOR=3
 LIBHFST_MINOR=15
-LIBHFST_EXTENSION=2
+LIBHFST_EXTENSION=4
 LIBHFST_VERSION=$LIBHFST_MAJOR.$LIBHFST_MINOR.$LIBHFST_EXTENSION
 
-AC_INIT([hfst], [3.15.2], [hfst-bugs@helsinki.fi], [hfst])
+AC_INIT([hfst], [3.15.4], [hfst-bugs@helsinki.fi], [hfst])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([-Wall std-options foreign check-news])
+AM_INIT_AUTOMAKE([-Wall std-options foreign check-news subdir-objects])
 
 # For automake >= 1.12
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -44,8 +44,8 @@ AC_CONFIG_HEADERS([config.h libhfst/src/hfst.hpp])
 
 AC_SUBST([LIBHFST_MAJOR],     [3])
 AC_SUBST([LIBHFST_MINOR],     [15])
-AC_SUBST([LIBHFST_EXTENSION], [2])
-AC_SUBST([LIBHFST_VERSION],   [3.15.2])
+AC_SUBST([LIBHFST_EXTENSION], [4])
+AC_SUBST([LIBHFST_VERSION],   [3.15.4])
 AC_SUBST([LIBHFST_NAME],      [hfst])
 
 # long version = version vector cast in base 10000, for automatic comparisons
@@ -56,7 +56,7 @@ AC_SUBST([LIBHFST_NAME],      [hfst])
 # $LIBHFST_MINOR * 10000 + $LIBHFST_EXTENSION + "L"
 # NB! It turned out to be not portable, and can't be used!
 
-AC_DEFINE([HFST_LONGVERSION], [300150002L],
+AC_DEFINE([HFST_LONGVERSION], [300150004L],
           [Define to hfst version vector as long in base 10000])
 AC_DEFINE([HFST_REVISION], ["$Revision$"],
           [Automatically substitute to configure.ac revision])
@@ -245,6 +245,12 @@ AC_ARG_ENABLE([determinize],
 			  [enable_determinize=$enableval],
 			  [if test x$enable_no_tools != xno; then enable_determinize=no; else enable_determinize=yes; fi])
 AM_CONDITIONAL([WANT_DETERMINIZE], [test x$enable_determinize != xno])
+AC_ARG_ENABLE([priority-disjunct],
+			  [AS_HELP_STRING([--enable-priority-disjunct],
+							  [build priority disjunct tool @<:@default=yes@:>@])],
+			  [enable_priority_disjunct=$enableval],
+			  [if test x$enable_no_tools != xno; then enable_priority_disjunct=no; else enable_priority_disjunct=yes; fi])
+AM_CONDITIONAL([WANT_PRIORITY_DISJUNCT], [test x$enable_priority_disjunct != xno])
 AC_ARG_ENABLE([disjunct],
 			  [AS_HELP_STRING([--enable-disjunct],
 							  [build disjunct tool @<:@default=yes@:>@])],
@@ -337,6 +343,12 @@ AC_ARG_ENABLE([info],
 			  [enable_info=$enableval],
 			  [if test x$enable_no_tools != xno; then enable_info=no; else enable_info=yes; fi])
 AM_CONDITIONAL([WANT_INFO], [test x$enable_info != xno])
+AC_ARG_ENABLE([insert-freely],
+			  [AS_HELP_STRING([--enable-insert-freely],
+							  [build insert-freely tool @<:@default=yes@:>@])],
+			  [enable_insert_freely=$enableval],
+			  [if test x$enable_no_tools != xno; then enable_insert_freely=no; else enable_insert_freely=yes; fi])
+AM_CONDITIONAL([WANT_INSERT_FREELY], [test x$enable_insert_freely != xno])
 AC_ARG_ENABLE([invert],
 			  [AS_HELP_STRING([--enable-invert],
 							  [build invert tool @<:@default=yes@:>@])],
@@ -445,12 +457,24 @@ AC_ARG_ENABLE([proc],
 			  [enable_proc=$enableval],
 			  [enable_proc=$enable_all_tools])
 AM_CONDITIONAL([WANT_PROC], [test x$enable_proc != xno])
+AC_ARG_ENABLE([push_labels],
+			  [AS_HELP_STRING([--enable-push-labels],
+							  [build push-labels tool @<:@default=yes@:>@])],
+			  [enable_push_labels=$enableval],
+			  [if test x$enable_no_tools != xno; then enable_push_labels=no; else enable_push_labels=yes; fi])
+AM_CONDITIONAL([WANT_PUSH_LABELS], [test x$enable_push_labels != xno])
 AC_ARG_ENABLE([push_weights],
 			  [AS_HELP_STRING([--enable-push-weights],
 							  [build push-weights tool @<:@default=yes@:>@])],
 			  [enable_push_weights=$enableval],
 			  [if test x$enable_no_tools != xno; then enable_push_weights=no; else enable_push_weights=yes; fi])
 AM_CONDITIONAL([WANT_PUSH_WEIGHTS], [test x$enable_push_weights != xno])
+AC_ARG_ENABLE([realign],
+			  [AS_HELP_STRING([--enable-realign],
+							  [build realign tool @<:@default=yes@:>@])],
+			  [enable_realign=$enableval],
+			  [if test x$enable_no_tools != xno; then enable_realign=no; else enable_realign=yes; fi])
+AM_CONDITIONAL([WANT_REALIGN], [test x$enable_realign != xno])
 AC_ARG_ENABLE([regexp2fst],
 			  [AS_HELP_STRING([--enable-regexp2fst],
 							  [build regexp2fst tool @<:@default=yes@:>@])],
@@ -836,6 +860,7 @@ cat <<EOF
     *                 conjunct: $enable_conjunct (intersect)
     *                 determinize: $enable_determinize (determinise)
     *                 disjunct: $enable_disjunct (union)
+    *                 priority-disjunct: $enable_priority_disjunct (priority union)
     *                 eliminate-flags: $enable_eliminate_flags
     *                 foma: $enable_foma_wrapper
     *                 format: $enable_format
@@ -847,6 +872,7 @@ cat <<EOF
     *                 guess: $enable_guess
     *                 head: $enable_head
     *                 invert: $enable_invert
+    *                 insert-freely: $enable_insert_freely
     *                 lexc: $enable_lexc
     *                 lexc-wrapper: $enable_lexc_wrapper
     *                 lookup: $enable_lookup
@@ -857,7 +883,9 @@ cat <<EOF
     *                 proc: $enable_proc
     *                 project: $enable_project
     *                 prune-alphabet: $enable_prune_alphabet
+    *                 push-labels: $enable_push_labels
     *                 push-weights: $enable_push_weights
+    *                 realign: $enable_realign
     *                 regexp2fst: $enable_regexp2fst
     *                 pmatch2fst: $enable_pmatch2fst
     *                 remove-epsilons: $enable_remove_epsilons

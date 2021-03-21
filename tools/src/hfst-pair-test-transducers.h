@@ -101,7 +101,7 @@ int get_symbol_number_key(Symbol symbol_number, char * symbol_name) {
 }
 
 /* Split symbol_pair_string at colon-character and attempt to code the pieces
-   into a KeyPair accoring to the coding given by KeyTable rule_keys. If
+   into a KeyPair according to the coding given by KeyTable rule_keys. If
    rule_keys, doesn't know one of the symbols, return NULL.
 
    symbol_pair_string should be set to a non-empty string. */

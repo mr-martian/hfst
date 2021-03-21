@@ -47,7 +47,7 @@ CLASSES:
 
 """
 
-__version__ = "3.15.2.0"
+__version__ = "3.15.4.0"
 
 import hfst.exceptions
 import hfst.sfst_rules
@@ -302,7 +302,7 @@ def regex(re, **kwargs):
 
     ;   end of expression
     !   starts a comment until end of line
-    #   starts a comment until end of line    
+    #   starts a comment until end of line
     """
     type_ = get_default_fst_type()
     to_console=get_output_to_console()
@@ -529,7 +529,7 @@ def read_prolog_transducer(f, linecount=[0]):
     """
     linecount_ = 0
     fsm = HfstBasicTransducer()
-    
+
     line = ""
     while(True):
         line = f.readline()
@@ -1086,7 +1086,7 @@ def fst_to_fsa(fst, separator=''):
     creates a transducer [f:b o:a o:r]. Calling
 
         foobar = hfst.fst_to_fsa(foo2bar)
-        
+
     will create the transducer [fb:fb oa:oa or:or] and
 
         foobar = hfst.fst_to_fsa(foo2bar, '^')
@@ -1117,7 +1117,7 @@ def fsa_to_fst(fsa, separator=''):
     """
     (Experimental)
 
-    Decode an encoded automaton back into a transducer, i.e. create a 
+    Decode an encoded automaton back into a transducer, i.e. create a
     transducer where each transition <inSout:inSout> of *fsa*, where 'S' is
     the first *separator* found in the compound symbol 'inSout', is replaced
     with a transition <in:out>.
@@ -1169,7 +1169,7 @@ def fsa_to_fst(fsa, separator=''):
                 raise RuntimeError('Transition symbol cannot be the empty string.')
             # separator given:
             if len(separator) > 0:
-                symbols = input.split(separator, 1)                
+                symbols = input.split(separator, 1)
             # no separator given:
             else:
                 index = input.find('@')
@@ -1340,7 +1340,7 @@ class ImplementationType:
 
     """
     SFST_TYPE = libhfst.SFST_TYPE
-    TROPICAL_OPENFST_TYPE = libhfst.TROPICAL_OPENFST_TYPE    
+    TROPICAL_OPENFST_TYPE = libhfst.TROPICAL_OPENFST_TYPE
     LOG_OPENFST_TYPE = libhfst.LOG_OPENFST_TYPE
     FOMA_TYPE = libhfst.FOMA_TYPE
     XFSM_TYPE = libhfst.XFSM_TYPE

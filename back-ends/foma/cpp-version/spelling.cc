@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2011 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation. */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +27,7 @@
 #define MED_DEFAULT_LIMIT 4              /* Default max words to find                 */
 #define MED_DEFAULT_CUTOFF 15            /* Default MED cost cutoff                   */
 #define MED_DEFAULT_MAX_HEAP_SIZE 262145 /* By default won't grow heap more than this */
- 
+
 #define BITMASK(b) (1 << ((b) & 7))
 #define BITSLOT(b) ((b) >> 3)
 #define BITSET(a,b) ((a)[BITSLOT(b)] |= BITMASK(b))
@@ -154,7 +154,7 @@ struct apply_med_handle *apply_med_init(struct fsm *net) {
     medh->agenda = (struct apply_med_handle::astarnode *)xxmalloc(sizeof(struct apply_med_handle::astarnode)*INITIAL_AGENDA_SIZE);
     medh->agenda->f = -1;
     medh->agenda_size = INITIAL_AGENDA_SIZE;
-    
+
     medh->heap = (int *)xxmalloc(sizeof(int)*INITIAL_HEAP_SIZE);
     medh->heap_size = INITIAL_HEAP_SIZE;
     *(medh->heap) = 0; /* Points to sentinel */
@@ -180,7 +180,7 @@ struct apply_med_handle *apply_med_init(struct fsm *net) {
     medh->instring_length = INITIAL_STRING_SIZE;
     medh->outstring = (char *)xxmalloc(sizeof(char)*INITIAL_STRING_SIZE);
     medh->outstring_length = INITIAL_STRING_SIZE;
-    
+
     medh->med_limit = MED_DEFAULT_LIMIT;
     medh->med_cutoff = MED_DEFAULT_CUTOFF;
     medh->med_max_heap_size = MED_DEFAULT_MAX_HEAP_SIZE;
@@ -267,16 +267,16 @@ char *apply_med(struct apply_med_handle *medh, char *word) {
         }
     }
 
-    
+
 
     *(medh->intword+j) = -1; /* sentinel */
-    
+
     /* Insert (0,0) g = 0 */
-    
+
     h = calculate_h(medh, medh->intword, 0, 0);
 
     /* Root node */
-    
+
     if (!node_insert(medh,0,0,0,h,0,0,-1)) { goto out; }
     medh->nummatches = 0;
 
@@ -305,7 +305,7 @@ char *apply_med(struct apply_med_handle *medh, char *word) {
         medh->curr_pos = curr_node->wordpos;
         medh->curr_state = curr_node->fsmstate;
         medh->curr_g = curr_node->g;
-        
+
         medh->lines = 0;
         medh->curr_node_has_match = 0;
 
@@ -329,7 +329,7 @@ char *apply_med(struct apply_med_handle *medh, char *word) {
 	    if (medh->nummatches == medh->med_limit) {
 		goto out;
 	    }
-	    
+
             if (medh->curr_ptr->target == -1 && medh->curr_pos == medh->utf8len)
                 break;
             if (medh->curr_ptr->target == -1 && medh->lines == 1)
@@ -339,7 +339,7 @@ char *apply_med(struct apply_med_handle *medh, char *word) {
 
             target = medh->curr_ptr->target;
             /* Add nodes to edge:0, edge:input, 0:edge */
-            
+
             /* Delete a symbol from input */
             in = medh->curr_ptr->in;
             out = 0;
@@ -366,7 +366,7 @@ char *apply_med(struct apply_med_handle *medh, char *word) {
             } else {
                 g = medh->curr_g;
             }
-           
+
             h = calculate_h(medh, medh->intword, medh->curr_pos+1, medh->curr_ptr->target);
             if ((g+h) <= medh->med_cutoff) {
                 if (!node_insert(medh,medh->curr_pos+1, target, g, h, in, out, medh->curr_agenda_offset)) {
@@ -381,10 +381,10 @@ char *apply_med(struct apply_med_handle *medh, char *word) {
 
                 in = 0;
                 out = *(medh->intword+medh->curr_pos);
-                
+
                 g = medh->hascm ? medh->curr_g + *(medh->cm+out) : medh->curr_g + inscost;
                 h = calculate_h(medh, medh->intword, medh->curr_pos+1, medh->curr_state);
-                
+
                 if (g+h <= medh->med_cutoff)
                     if (!node_insert(medh,medh->curr_pos+1, medh->curr_state, g, h, in, out, medh->curr_agenda_offset)) {
 			goto out;
@@ -439,17 +439,17 @@ struct apply_med_handle::astarnode *node_delete_min(struct apply_med_handle *med
     if (medh->heapcount == 0) {
         return NULL;
     }
- 
+
    /* We find the min from the heap */
 
     firstptr = medh->agenda+medh->heap[1];
     lastptr = medh->agenda+medh->heap[medh->heapcount];
     medh->heapcount--;
-    
+
     /* Adjust heap */
     for (i = 1; (i<<1) <= medh->heapcount; i = child) {
         child = i<<1;
-        
+
         /* If right child is smaller (higher priority) than left child */
         if (child != medh->heapcount &&
             ((medh->agenda+medh->heap[child+1])->f < (medh->agenda+medh->heap[child])->f ||
@@ -457,12 +457,12 @@ struct apply_med_handle::astarnode *node_delete_min(struct apply_med_handle *med
               (medh->agenda+medh->heap[child+1])->wordpos > (medh->agenda+medh->heap[child])->wordpos))) {
             child++;
         }
-        
+
         /* If child has lower priority than last element */
         if ((medh->agenda+medh->heap[child])->f < lastptr->f ||
             ((medh->agenda+medh->heap[child])->f <= lastptr->f &&
              (medh->agenda+medh->heap[child])->wordpos > lastptr->wordpos)) {
-            
+
             medh->heap[i] = medh->heap[child];
         } else {
             break;
@@ -591,13 +591,13 @@ void fsm_create_letter_lookup(struct apply_med_handle *medh, struct fsm *net) {
 
     num_states = net->statecount;
     num_symbols = sigma_max(net->sigma);
-    
+
     medh->bytes_per_letter_array = BITNSLOTS(num_symbols+1);
     medh->letterbits = (uint8_t *)xxcalloc(medh->bytes_per_letter_array*num_states,sizeof(uint8_t));
     medh->nletterbits = (uint8_t *)xxcalloc(medh->bytes_per_letter_array*num_states,sizeof(uint8_t));
 
     sccinfo = (struct sccinfo *)xxcalloc(num_states,sizeof(struct sccinfo));
-    
+
     index = 1;
     curr_ptr = net->states;
     goto l1;
@@ -624,7 +624,7 @@ void fsm_create_letter_lookup(struct apply_med_handle *medh, struct fsm *net) {
         } else {
             goto l3;
         }
-        
+
     l1:
         v = curr_ptr->state_no;
         vp = curr_ptr->target;  /* target */
@@ -664,7 +664,7 @@ void fsm_create_letter_lookup(struct apply_med_handle *medh, struct fsm *net) {
             goto l2;
         }
 
-        
+
         /* T: if lastedge, v.lowlink == v.index, pop Tstack until v is popped and copy v.list to others */
         /* Copy all bits from root of SCC to descendants */
     l4:
@@ -679,7 +679,7 @@ void fsm_create_letter_lookup(struct apply_med_handle *medh, struct fsm *net) {
             //printf("\n");
         }
     }
-    
+
     for (i=0; i < num_states; i++) {
         //printf("State %i: ",i);
         for (j=0; j <= num_symbols; j++) {

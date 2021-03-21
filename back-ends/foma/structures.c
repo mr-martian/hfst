@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2010 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation. */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <string.h>
@@ -128,7 +128,7 @@ struct fsm *fsm_sigma_net(struct fsm *net) {
 	fsm_destroy(net);
         return(fsm_empty_set());
     }
-    
+
     fsm_state_init(sigma_max(net->sigma));
     fsm_state_set_current_state(0, 0, 1);
     pathcount = 0;
@@ -156,7 +156,7 @@ struct fsm *fsm_sigma_pairs_net(struct fsm *net) {
     char *pairs;
     short int in, out;
     int i, pathcount, smax;
-    
+
     smax = sigma_max(net->sigma)+1;
     pairs = xxcalloc(smax*smax, sizeof(char));
 
@@ -423,7 +423,7 @@ int fsm_isidentity(struct fsm *net) {
     /* c) we encounter a final state and have a non-null current discrepancy.   */
     /* d) we encounter @ with a non-null discrepancy anywhere.                  */
     /* e) we encounter ? anywhere.                                              */
-    
+
     struct discrepancy {
         short int *string;
         short int length;
@@ -438,7 +438,7 @@ int fsm_isidentity(struct fsm *net) {
 
     fsm_minimize(net);
     fsm_count(net);
-    
+
     num_states = net->statecount;
     discrepancy = xxcalloc(num_states,sizeof(struct discrepancy));
     state_array = map_firstlines(net);
@@ -487,7 +487,7 @@ int fsm_isidentity(struct fsm *net) {
                 factor = -1;
             else if (out == EPSILON)
                 factor = 1;
-            
+
             newlength = currd->length + factor;
             startfrom = (abs(newlength) <= abs(currd->length)) ? 1 : 0;
 
@@ -662,7 +662,7 @@ struct fsm *fsm_extract_nonidentity(struct fsm *net) {
     fsm_minimize(net);
     fsm_count(net);
     killnum = sigma_add("@KILL@", net->sigma);
-    
+
     num_states = net->statecount;
     discrepancy = xxcalloc(num_states,sizeof(struct discrepancy));
     state_array = map_firstlines(net);
@@ -710,7 +710,7 @@ struct fsm *fsm_extract_nonidentity(struct fsm *net) {
                 factor = -1;
             else if (out == EPSILON)
                 factor = 1;
-            
+
             newlength = currd->length + factor;
             startfrom = (abs(newlength) <= abs(currd->length)) ? 1 : 0;
 
@@ -800,7 +800,7 @@ struct fsm *fsm_copy (struct fsm *net) {
 
 struct fsm_state *fsm_state_copy(struct fsm_state *fsm_state, int linecount) {
   struct fsm_state *new_fsm_state;
-  
+
   new_fsm_state = xxmalloc(sizeof(struct fsm_state)*(linecount));
   memcpy(new_fsm_state, fsm_state, linecount*sizeof(struct fsm_state));
   return(new_fsm_state);
@@ -834,7 +834,7 @@ void add_quantifier (char *string) {
 	quantifiers = q;
     } else {
 	for (q = quantifiers; q->next != NULL; q = q->next) {
-	    
+
 	}
 	q->next = xxmalloc(sizeof(struct defined_quantifiers));
 	q = q->next;
@@ -846,14 +846,14 @@ void add_quantifier (char *string) {
 struct fsm *union_quantifiers() {
 /*     We create a FSM that simply accepts the union of all */
 /*     quantifier symbols */
-    
+
     struct fsm *net;
     struct defined_quantifiers *q;
     int i, syms, s, symlo;
-    
+
     net = fsm_create("");
     fsm_update_flags(net, YES, YES, YES, YES, NO, NO);
-    
+
     for (syms = 0, symlo = 0, q = quantifiers; q != NULL; q = q->next) {
       s = sigma_add(q->name, net->sigma);
       if (symlo == 0) {
@@ -904,7 +904,7 @@ struct fsm *fsm_quantifier(char *string) {
 struct fsm *fsm_logical_precedence(char *string1, char *string2) {
     /* x < y = \y* x \y* [x | y Q* x] ?* */
     /*          1  2  3        4           5 */
-    
+
     return(fsm_concat(fsm_kleene_star(fsm_term_negation(fsm_symbol(string2))),fsm_concat(fsm_symbol(string1),fsm_concat(fsm_kleene_star(fsm_term_negation(fsm_symbol(string2))),fsm_concat(fsm_union(fsm_symbol(string1),fsm_concat(fsm_symbol(string2),fsm_concat(union_quantifiers(),fsm_symbol(string1)))),fsm_universal())))));
 
 /*    1,3   fsm_kleene_star(fsm_term_negation(fsm_symbol(string2))) */

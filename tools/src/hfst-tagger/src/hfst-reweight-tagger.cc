@@ -52,7 +52,7 @@ print_usage()
 {
     // c.f. http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dhelp
     fprintf(message_out, "Usage: %s [OPTIONS...] [INFILE]\n"
-            "Reweight a tagger accoring to a configuration file\n"
+            "Reweight a tagger according to a configuration file\n"
             "hfst_tagger_config.\n"
         "\n", program_name);
 

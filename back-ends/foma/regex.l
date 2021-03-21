@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2014 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation. */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 %option noinput
 %option reentrant bison-bridge
@@ -235,7 +235,7 @@ BRACED      [{]([^}]|[\300-\337].|[\340-\357]..|[\360-\367]...)+[}]
 [\050][\342][\210][\200]/(([\000-\177]{-}[\051])|[\300-\337].|[\340-\357]..|[\360-\367]...)+[\051] {
     BEGIN(UQ);
 }
- 
+
  /* Start of existential quantifier */
 [\050][\342][\210][\203]/(([\000-\177]{-}[\051])|[\300-\337].|[\340-\357]..|[\360-\367]...)+[\051] {
     BEGIN(EQ);
@@ -319,7 +319,7 @@ BRACED      [{]([^}]|[\300-\337].|[\340-\357]..|[\360-\367]...)+[}]
 (_flatten\()         { return FLATTEN;         }
 (_sublabel\()        { return SUBLABEL;        }
 (_close\()           { return CLOSESIGMA;      }
-(_closeu\()           { return CLOSESIGMAUNK;   }
+(_closeu\()          { return CLOSESIGMAUNK;   }
 
 ({NONRESERVED}+\() {
    yylval_param->string = xxstrdup(yytext);
@@ -423,6 +423,7 @@ BRACED      [{]([^}]|[\300-\337].|[\340-\357]..|[\360-\367]...)+[}]
 (\/\/) {                     yylval_param->type = OP_RIGHTWARD_REPLACE; return DIRECTION; }
 (\\\\) {                     yylval_param->type = OP_LEFTWARD_REPLACE;  return DIRECTION; }
 (\\\/) {                     yylval_param->type = OP_DOWNWARD_REPLACE;  return DIRECTION; }
+(\|\|\|) {                   yylval_param->type = OP_TWO_LEVEL_REPLACE; return DIRECTION; }
 (:) {                        return HIGH_CROSS_PRODUCT;  }
 (\.x\.|[\303][\227]) {       return CROSS_PRODUCT;       }
 (,) {                        return COMMA;               }

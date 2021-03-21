@@ -33,8 +33,8 @@ contains debian packages for HFST API library, command line tools and Python bin
 The debian packages are experimental; the requirements of debian or ubuntu
 installations are same as main packages. SFST is excluded from the packages
 as it has portability issues with hash_maps and hash_sets.
-For installation instructions, see our
-`KitWiki pages <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstDownloads#Installing_HFST_to_Linux>`_.
+For installation instructions, see
+`downloads <https://hfst.github.io/downloads/>`_.
 
 Binaries for Windows
 --------------------
@@ -42,8 +42,8 @@ Binaries for Windows
 Binaries for Windows are distributed via `Apertium project
 <http://apertium.projectjj.com/win32/nightly/>`_. This folder contains
 ready-compiled HFST library and command line tools.
-For installation instructions, see our
-`KitWiki pages <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstDownloads#Installing_HFST_to_Windows>`_.
+For installation instructions, see
+`downloads <https://hfst.github.io/downloads/>`_.
 Python bindings for Windows are currently available as wheels for 32-bit
 Python versions 2.7, 3.4, 3.5 and 3.6 on our `PyPI page
 <https://pypi.python.org/pypi/hfst>`_.
@@ -57,8 +57,8 @@ Binaries for Mac OS X
 Binaries for OS X are distributed via `Apertium project
 <http://apertium.projectjj.com/osx/nightly/>`_. This folder contains
 ready-compiled HFST library and command line tools.
-For installation instructions, see our
-`KitWiki pages <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstDownloads#Installing_HFST_to_Mac_OS_X>`_.
+For installation instructions, see
+`downloads <https://hfst.github.io/downloads/>`_.
 Python bindings for OS X are currently available as wheels for
 Python versions 2.7, 3.4, 3.5 and 3.6 on our `PyPI page
 <https://pypi.python.org/pypi/hfst>`_.
@@ -259,7 +259,7 @@ and install the necessary autotools files from the host system:
   autoreconf -i
 
 It is common practice to keep `generated files out of version control
-<http://www.gnu.org/software/automake/manual/automake.html#CVS>`_.
+<https://www.gnu.org/software/automake/manual/automake.html#CVS>`_.
 
 For further installation instruction refer to file ``INSTALL``, which contains
 the standard installation instructions for GNU autoconf based software.
@@ -442,7 +442,7 @@ Further information
 ===================
 
 The `Hfst wiki site
-<https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstHome>`_ contains further
+<https://github.com/hfst/hfst/wiki>`_ contains further
 details of the HFST system.
 
 Reporting bugs

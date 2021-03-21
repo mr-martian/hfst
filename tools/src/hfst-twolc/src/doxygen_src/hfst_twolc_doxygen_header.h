@@ -26,7 +26,7 @@
 //! documentation.
 //!
 //! Documentation for the end-user of hfst-twolc is available
-//! <a href="https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstTwolC">here</a>.
+//! <a href="https://github.com/hfst/hfst/wiki/HfstTwolC">here</a>.
 //!
 //! Beesely and Karttunen 2003:
 //! <a href="http://www.stanford.edu/~laurik/.book2software/twolc.pdf">

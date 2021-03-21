@@ -28,7 +28,7 @@ IMPLEMENTATION_SRCS=ConvertTransducerFormat.cc \
 AM_CXXFLAGS=-Wno-deprecated -g
 
 AM_CPPFLAGS = -I${top_srcdir}/libhfst/src -I${top_srcdir}/back-ends/foma \
-		-I${top_srcdir}/back-ends
+		-I${top_srcdir}/back-ends ${ICU_CPPFLAGS}
 
 if WANT_MINGW
   AM_CPPFLAGS += -I${top_srcdir}/back-ends/openfstwin/src/include \

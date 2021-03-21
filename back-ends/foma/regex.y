@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2014 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 %{
 #include <stdio.h>
@@ -106,10 +106,11 @@ void clear_rewrite_ruleset(struct rewrite_set *rewrite_rules) {
 	    fsm_destroy(r->left);
 	    fsm_destroy(r->right);
 	    fsm_destroy(r->right2);
+	    fsm_destroy(r->cross_product);
 	    rp = r->next;
 	    xxfree(r);
 	}
-	
+
 	for (contexts = rule->rewrite_contexts; contexts != NULL ; contexts = contextsp) {
 
 	    contextsp = contexts->next;
@@ -133,13 +134,24 @@ void add_rewrite_rule() {
         new_rewrite_rule->rewrite_contexts = contexts;
         new_rewrite_rule->next = rewrite_rules;
         new_rewrite_rule->rule_direction = rule_direction;
-        new_rewrite_rule->cpunion = NULL;
 
         rewrite_rules = new_rewrite_rule;
         rules = NULL;
         contexts = NULL;
         rule_direction = 0;
     }
+}
+
+void add_eprule(struct fsm *R, struct fsm *R2, int type) {
+    struct fsmrules *newrule;
+    rewrite = 1;
+    newrule = xxmalloc(sizeof(struct fsmrules));
+    newrule->left = fsm_empty_string();
+    newrule->right = R;
+    newrule->right2 = R2;
+    newrule->arrow_type = type;
+    newrule->next = rules;
+    rules = newrule;
 }
 
 void add_rule(struct fsm *L, struct fsm *R, struct fsm *R2, int type) {
@@ -189,7 +201,7 @@ void add_rule(struct fsm *L, struct fsm *R, struct fsm *R2, int type) {
      int  type;
 }
 
-%pure-parser
+%define api.pure full
 %expect 686
 %parse-param { void *scanner }
 %parse-param { struct defined_networks *defined_nets }
@@ -266,11 +278,11 @@ n0: network1 { }
 | n0 ARROW               { add_rule($1,NULL,NULL,$2); }
 
 | LDOT n0 RDOT ARROW n0  { add_rule($2,$5,NULL,$4|ARROW_DOTTED); if ($5 == NULL) { YYERROR;}}
-| LDOT RDOT ARROW n0  { add_rule(fsm_empty_string(),$4,NULL,$3|ARROW_DOTTED); if ($4 == NULL) { YYERROR;}}
+| LDOT RDOT ARROW n0  { add_eprule($4,NULL,$3|ARROW_DOTTED); if ($4 == NULL) { YYERROR;}}
 | LDOT n0 RDOT ARROW n0 COMMA n0 { add_rule($2,$5,NULL,$4|ARROW_DOTTED);}
-| LDOT RDOT ARROW n0 COMMA n0 { add_rule(fsm_empty_string(),$4,NULL,$3|ARROW_DOTTED);}
+| LDOT RDOT ARROW n0 COMMA n0 { add_eprule($4,NULL,$3|ARROW_DOTTED);}
 | LDOT n0 RDOT ARROW n0 DIRECTION n0 { add_rule($2,$5,NULL,$4|ARROW_DOTTED); rule_direction = $6;}
-| LDOT RDOT ARROW n0 DIRECTION n0 { add_rule(fsm_empty_string(),$4,NULL,$3|ARROW_DOTTED); rule_direction = $5;}
+| LDOT RDOT ARROW n0 DIRECTION n0 { add_eprule($4,NULL,$3|ARROW_DOTTED); rule_direction = $5;}
 | n0 ARROW n0 COMMA n0 { add_rule($1,$3,NULL,$2);}
 | n0 ARROW COMMA n0 { add_rule($1,NULL,NULL,$2);}
 | n0 ARROW n0 DIRECTION n0 { add_rule($1,$3,NULL,$2); rule_direction = $4;}
@@ -389,7 +401,7 @@ network12: fend    { $$ = $1; } |
          CLOSESIGMA    network RPAREN { $$ = fsm_close_sigma(fsm_copy($2), 0); } |
          CLOSESIGMAUNK network RPAREN { $$ = fsm_close_sigma(fsm_copy($2), 1); } |
          EQSUBSTRINGS network COMMA network COMMA network RPAREN { $$ = fsm_equal_substrings($2,$4,$6); }
-      
+
 fstart: FUNCTION network COMMA
 { frec++; fargptr[frec] = 0 ;declare_function_name($1) ; add_function_argument($2); }
 |       FUNCTION network

@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2014 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -80,7 +80,7 @@ char no_readline_line[512];
    Returns NULL on EOF. */
 
 char *rl_gets(char *prompt) {
-    
+
     /* If the buffer has already been allocated,
        return the memory to the free pool. */
 #if defined(ORIGINAL) || defined(HAVE_READLINE)
@@ -101,7 +101,7 @@ char *rl_gets(char *prompt) {
     } else {
         line_read = readline(prompt);
     }
-    
+
     /* If the line has any text in it,
        save it on the history. */
     if (use_readline == 1) {
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
 	    prompt[0] = '\0';
 
 	fflush(stdout);
-	
+
         command = rl_gets(prompt);
 
         if (command == NULL && promptmode == PROMPT_MAIN) {
@@ -225,7 +225,7 @@ static char **my_completion(const char *text, int start, int end) {
     matches = (char **)NULL;
     smatch = start;
     matches = rl_completion_matches ((char*)text, &my_generator);
-    
+
     return (matches);
 }
 
@@ -239,7 +239,7 @@ char *my_generator(const char *text, int state) {
         nummatches = 0;
         len = strlen(text);
     }
-    
+
     while ((name = cmd[list_index])) {
         list_index++;
 
@@ -249,17 +249,17 @@ char *my_generator(const char *text, int state) {
             return(strdup(name+smatch));
         }
     }
-    
+
     if (rl_point > 0) {
         while ((name = abbrvcmd[list_index2])) {
             list_index2++;
-            
+
             /* Can't use xxstrdup here */
             if (strncmp (name, text, len) == 0)
                 return(strdup(name+smatch));
         }
     }
-    
+
     /* If no names matched, then return NULL. */
     return ((char *)NULL);
 }

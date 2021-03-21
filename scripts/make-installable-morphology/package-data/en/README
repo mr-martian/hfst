@@ -10,7 +10,7 @@ The lexicon has been further expanded by including words appearing in the
 British National Corpus (BNC).  The grammar itself is licensed under the Gnu
 General Public License.  The BNC expansion is not available in src/ as we don't
 have license to distribute, but a guide to producing something similar may be
-found in https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstApplicationTutorial?#Building_an_English_morphology_f .
+found in https://github.com/hfst/hfst/wiki/HfstApplicationTutorial?#Building_an_English_morphology_f .
 
 Compilation
 -----------

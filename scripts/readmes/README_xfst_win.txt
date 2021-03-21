@@ -2,7 +2,7 @@
 This package contains the command line tool hfst-xfst.exe for 64-bit Windows.
 
 For more info about the tool, see:
-  <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstXfst>
+  <https://github.com/hfst/hfst/wiki/HfstXfst>
 
 For more info about the HFST project, see:
   <http://hfst.sourceforge.net/>
@@ -38,7 +38,7 @@ Options
 -------
 
 When run from the command line, a number of options are available. For more
-info, see the page <https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstXfst>.
+info, see the page <https://github.com/hfst/hfst/wiki/HfstXfst>.
 Some important options related to input and output processing are:
 
   -F, --scriptfile=FILE      Read commands from FILE, and quit

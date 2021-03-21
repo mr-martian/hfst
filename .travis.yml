@@ -1,42 +1,24 @@
 language: cpp
-
-# let linux be Ubuntu 16.04 Xenial
 sudo: required
-dist: xenial
+dist: focal
 
 os:
   - linux
-  - osx
-
-#cache:
-#    - ccache
-#    - $HOME/Library/Caches/Homebrew
+#  - osx
 
 before_install:
-    - echo "$TRAVIS_OS_NAME"
-    - if [[ "$TRAVIS_OS_NAME" = "linux" ]];then sudo apt-get install -qfy autoconf automake autotools-dev bison flex libicu-dev libreadline-dev libtool pkg-config python3-dev python3-setuptools swig zlib1g-dev; fi
-    - if [[ "$TRAVIS_OS_NAME" = "osx" ]];then brew update; fi
-    - if [[ "$TRAVIS_OS_NAME" = "osx" ]];then brew install bison flex icu4c glib swig python; fi
-    - if [[ "$TRAVIS_OS_NAME" = "osx" ]];then export "PATH=$(brew --prefix bison)/bin:$(brew --prefix icu4c)/bin:$PATH"; fi
-
-# TODO: "apt-get build-dep hfst" fails with "Unable to find a source package for hfst";
-# is there a source package in the nightly repo?
-
-env:
-  - CONFIG_EXTRA=""
-  - CONFIG_EXTRA="--with-unicode-handler=icu"
-  # - CONFIG_EXTRA="--with-unicode-handler=glib"
+  - echo "$TRAVIS_OS_NAME"
+  - if [[ "$TRAVIS_OS_NAME" = "linux" ]];then sudo apt-get install -qfy autoconf automake autotools-dev bison flex libicu-dev libreadline-dev libtool pkg-config python3-dev python3-setuptools swig zlib1g-dev; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]];then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]];then brew install --force bison flex icu4c glib swig python; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]];then export "PATH=$(brew --prefix bison)/bin:$(brew --prefix icu4c)/bin:$PATH"; fi
 
 script:
-    - autoreconf -fvi
-#    - export CCACHE_ARGS=()
-#    - if command -v ccache >/dev/null 2>/dev/null; then CCACHE_ARGS+=( CC="ccache gcc" ); CCACHE_ARGS+=( CXX="ccache g++" ); fi
-#    - echo "${CCACHE_ARGS[@]:-}"
-    - ./configure --enable-all-tools --enable-python-bindings "${CCACHE_ARGS[@]:-}" ${CONFIG_EXTRA}
-    - if [[ $CXX = g++ ]]; then make -j2; else make -j; fi
-    - make check VERBOSE=1
-
-# g++ with -j runs out of memory on travis, thus -j2
+  - autoreconf -fvi
+  - ./configure --disable-static --enable-all-tools --with-readline --with-unicode-handler=icu --enable-python-bindings
+  - make -j4 V=1 VERBOSE=1
+  - make check V=1 VERBOSE=1
+  - sudo make install
 
 notifications:
     irc:

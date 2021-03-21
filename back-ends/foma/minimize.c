@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2010 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation. */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdlib.h>
 #include <assert.h>
@@ -134,7 +134,7 @@ static struct fsm *fsm_minimize_hop(struct fsm *net) {
     }
 
     num_states = net->statecount;
-    
+
     P = NULL;
 
     /*
@@ -143,9 +143,9 @@ static struct fsm *fsm_minimize_hop(struct fsm *net) {
        3. Init Agenda = {Q, Q-F}
        4. Split until Agenda is empty
     */
-    
+
     sigma_to_pairs(net);
-    
+
     init_PE();
 
     if (total_states == num_states) {
@@ -181,7 +181,7 @@ static struct fsm *fsm_minimize_hop(struct fsm *net) {
             /* Clear tails if symloop should start from 0 */
             if (current_i == 0)
                 tptr->tail = 0;
-            
+
             tail = tptr->tail;
             transitions = (tptr->transitions)+tail;
             if (tail < tptr->size && transitions->inout < minsym) {
@@ -230,9 +230,9 @@ static struct fsm *fsm_minimize_hop(struct fsm *net) {
     xxfree(trans_list);
 
  bail:
-    
+
     xxfree(Agenda_top);
-    
+
     xxfree(memo_table);
     xxfree(temp_move);
     xxfree(temp_group);
@@ -243,7 +243,7 @@ static struct fsm *fsm_minimize_hop(struct fsm *net) {
     xxfree(Phead);
     xxfree(single_sigma_array);
     xxfree(double_sigma_array);
-    
+
     return(net);
 }
 
@@ -298,7 +298,7 @@ static struct fsm *rebuild_machine(struct fsm *net) {
       j++;
     }
   }
-  
+
   add_fsm_arc(fsm, j, -1, -1, -1, -1, -1, -1);
   fsm = xxrealloc(fsm,sizeof(struct fsm_state)*(new_linecount+1));
   net->states = fsm;
@@ -330,12 +330,12 @@ static INLINE int refine_states(int invstates) {
   }
 
   /* Split (this is the tricky part) */
-  
+
   for (i=0; i < invstates; i++) {
-    
+
     thise = E+*(temp_move+i);
     tP = thise->group;
-    
+
     /* Do we need to split?
        if we've touched as many states as there are in the partition
        we don't split */
@@ -345,9 +345,9 @@ static INLINE int refine_states(int invstates) {
       tP->inv_t_count = 0;
       continue;
     }
-    
+
     if ((tP->t_count != tP->count) && (tP->count > 1) && (tP->t_count > 0)) {
-        
+
         /* Check if we already split this */
         newP = tP->current_split;
         if (newP == NULL) {
@@ -367,7 +367,7 @@ static INLINE int refine_states(int invstates) {
             newP->agenda = NULL;
 
             /* Add to agenda */
-            
+
             /* If the current block (tP) is on the agenda, we add both back */
             /* to the agenda */
             /* In practice we need only add newP since tP stays where it is */
@@ -402,32 +402,32 @@ static INLINE int refine_states(int invstates) {
             newP->next = P->next;
             P->next = newP;
         }
-    
+
         thise->group = newP;
         newP->count++;
-        
+
         /* need to make tP->last_e point to the last untouched e */
         if (thise == tP->last_e)
             tP->last_e = thise->left;
         if (thise == tP->first_e)
             tP->first_e = thise->right;
-        
+
         /* Adjust links */
         if (thise->left != NULL)
             thise->left->right = thise->right;
         if (thise->right != NULL)
             thise->right->left = thise->left;
-        
+
         if (newP->last_e != thise) {
             newP->last_e->right = thise;
             thise->left = newP->last_e;
             newP->last_e = thise;
         }
-    
+
         thise->right = NULL;
         if (newP->first_e == thise)
             thise->left = NULL;
-        
+
         /* Are we done for this block? Adjust counters */
         if (newP->count == tP->t_count) {
             tP->count = tP->count - newP->count;
@@ -486,7 +486,7 @@ static void init_PE() {
   FP->current_split = NULL;
   nonFP->current_split = NULL;
   FP->inv_count = nonFP->inv_count = FP->inv_t_count = nonFP->inv_t_count = 0;
-  
+
   /* How many groups can we put on the agenda? */
   Agenda_top = Agenda_next = xxcalloc(num_states*2, sizeof(struct agenda));
   Agenda_head = NULL;
@@ -520,13 +520,13 @@ static void init_PE() {
           Agenda_head = ag;
       }
   }
-  
+
   /* Initialize doubly linked list E */
   E = xxcalloc(num_states,sizeof(struct e));
 
   last_f = NULL;
   last_nonf = NULL;
-  
+
   for (i=0; i < num_states; i++) {
     if (finals[i]) {
       (E+i)->group = FP;
@@ -561,7 +561,7 @@ static int trans_sort_cmp(const void *a, const void *b) {
 }
 
 static void generate_inverse(struct fsm *net) {
-    
+
     struct fsm_state *fsm;
     struct trans_array_struct *tptr;
     struct trans_list_struct *listptr;
@@ -608,12 +608,12 @@ static void generate_inverse(struct fsm *net) {
 }
 
 static void sigma_to_pairs(struct fsm *net) {
-    
+
   int i, j, x, y, z, next_x = 0;
   struct fsm_state *fsm;
 
   fsm = net->states;
-  
+
   epsilon_symbol = -1;
   maxsigma = sigma_max(net->sigma);
 
@@ -621,13 +621,13 @@ static void sigma_to_pairs(struct fsm *net) {
 
   single_sigma_array = xxmalloc(2*maxsigma*maxsigma*sizeof(int));
   double_sigma_array = xxmalloc(maxsigma*maxsigma*sizeof(int));
-  
+
   for (i=0; i < maxsigma; i++) {
     for (j=0; j< maxsigma; j++) {
       *(double_sigma_array+maxsigma*i+j) = -1;
     }
   }
-  
+
   /* f(x) -> y,z sigma pair */
   /* f(y,z) -> x simple entry */
   /* if exists f(n) <-> EPSILON, EPSILON, save n */

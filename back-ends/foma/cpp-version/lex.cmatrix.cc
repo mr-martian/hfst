@@ -189,7 +189,7 @@ extern FILE *cmatrixin, *cmatrixout;
 #define EOB_ACT_LAST_MATCH 2
 
     #define YY_LESS_LINENO(n)
-    
+
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
@@ -251,7 +251,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -721,7 +721,7 @@ static int currcost;
 static char *instring;
 
 void my_cmatrixparse(struct fsm *net, char *my_string) {
-   				       
+
    YY_BUFFER_STATE my_string_buffer;
 
    currcost = 1;
@@ -925,7 +925,7 @@ YY_DECL
 	register yy_state_type yy_current_state;
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
-    
+
 #line 53 "cmatrix.l"
 
 
@@ -1400,7 +1400,7 @@ static int yy_get_next_buffer (void)
 {
 	register yy_state_type yy_current_state;
 	register char *yy_cp;
-    
+
 	yy_current_state = (yy_start);
 	yy_current_state += YY_AT_BOL();
 
@@ -1431,7 +1431,7 @@ static int yy_get_next_buffer (void)
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
 	register int yy_is_jam;
-    
+
 	register YY_CHAR yy_c = 24;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
@@ -1456,7 +1456,7 @@ static int yy_get_next_buffer (void)
 
 {
 	int c;
-    
+
 	*(yy_c_buf_p) = (yy_hold_char);
 
 	if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
@@ -1530,7 +1530,7 @@ static int yy_get_next_buffer (void)
  */
     void cmatrixrestart  (FILE * input_file )
 {
-    
+
 	if ( ! YY_CURRENT_BUFFER ){
         cmatrixensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
@@ -1547,7 +1547,7 @@ static int yy_get_next_buffer (void)
  */
     void cmatrix_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
-    
+
 	/* TODO. We should be able to replace this entire function body
 	 * with
 	 *		cmatrixpop_buffer_state();
@@ -1593,7 +1593,7 @@ static void cmatrix_load_buffer_state  (void)
     YY_BUFFER_STATE cmatrix_create_buffer  (FILE * file, int  size )
 {
 	YY_BUFFER_STATE b;
-    
+
 	b = (YY_BUFFER_STATE) cmatrixalloc(sizeof( struct yy_buffer_state )  );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in cmatrix_create_buffer()" );
@@ -1620,7 +1620,7 @@ static void cmatrix_load_buffer_state  (void)
  */
     void cmatrix_delete_buffer (YY_BUFFER_STATE  b )
 {
-    
+
 	if ( ! b )
 		return;
 
@@ -1636,7 +1636,7 @@ static void cmatrix_load_buffer_state  (void)
 #ifndef __cplusplus
 extern int isatty (int );
 #endif /* __cplusplus */
-    
+
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a cmatrixrestart() or at EOF.
@@ -1645,7 +1645,7 @@ extern int isatty (int );
 
 {
 	int oerrno = errno;
-    
+
 	cmatrix_flush_buffer(b );
 
 	b->yy_input_file = file;
@@ -1661,7 +1661,7 @@ extern int isatty (int );
     }
 
         b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
-    
+
 	errno = oerrno;
 }
 
@@ -1750,7 +1750,7 @@ void cmatrixpop_buffer_state (void)
 static void cmatrixensure_buffer_stack (void)
 {
 	int num_to_alloc;
-    
+
 	if (!(yy_buffer_stack)) {
 
 		/* First allocation is just for 2 elements, since we don't know if this
@@ -1763,9 +1763,9 @@ static void cmatrixensure_buffer_stack (void)
 								);
 		if ( ! (yy_buffer_stack) )
 			YY_FATAL_ERROR( "out of dynamic memory in cmatrixensure_buffer_stack()" );
-								  
+
 		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		(yy_buffer_stack_max) = num_to_alloc;
 		(yy_buffer_stack_top) = 0;
 		return;
@@ -1799,7 +1799,7 @@ static void cmatrixensure_buffer_stack (void)
 YY_BUFFER_STATE cmatrix_scan_buffer  (char * base, yy_size_t  size )
 {
 	YY_BUFFER_STATE b;
-    
+
 	if ( size < 2 ||
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
@@ -1835,7 +1835,7 @@ YY_BUFFER_STATE cmatrix_scan_buffer  (char * base, yy_size_t  size )
  */
 YY_BUFFER_STATE cmatrix_scan_string (yyconst char * yystr )
 {
-    
+
 	return cmatrix_scan_bytes(yystr,strlen(yystr) );
 }
 
@@ -1852,7 +1852,7 @@ YY_BUFFER_STATE cmatrix_scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 	char *buf;
 	yy_size_t n;
 	int i;
-    
+
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
 	buf = (char *) cmatrixalloc(n  );
@@ -1910,7 +1910,7 @@ static void yy_fatal_error (yyconst char* msg )
  */
 int cmatrixget_lineno  (void)
 {
-        
+
     return cmatrixlineno;
 }
 
@@ -1953,7 +1953,7 @@ char *cmatrixget_text  (void)
  */
 void cmatrixset_lineno (int  line_number )
 {
-    
+
     cmatrixlineno = line_number;
 }
 
@@ -2019,7 +2019,7 @@ static int yy_init_globals (void)
 /* cmatrixlex_destroy is for both reentrant and non-reentrant scanners. */
 int cmatrixlex_destroy  (void)
 {
-    
+
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
 		cmatrix_delete_buffer(YY_CURRENT_BUFFER  );

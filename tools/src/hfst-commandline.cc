@@ -855,10 +855,10 @@ void
 print_more_info()
 {
     fprintf(message_out, "%s home page: \n"
-            "<" KITWIKI_URL "/%s>\n",
-            program_name, hfst_tool_wikiname);
+            "<%s/%s>\n",
+            WIKI_URL, program_name, hfst_tool_wikiname);
     fprintf(message_out, "General help using HFST software: \n"
-            "<" KITWIKI_URL "/HfstHome>\n");
+            "<%s>\n", WIKI_URL);
 }
 
 // print version message

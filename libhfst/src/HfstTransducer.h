@@ -553,7 +553,7 @@ An example:
 
         For more information on transducer conversions and the HFST header
         structure, see
-        <a href="https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstTransducerHeader">here</a>.
+        <a href="https://github.com/hfst/hfst/wiki/HfstTransducerHeader">here</a>.
 
         @pre ( in.is_eof() == in.is_bad() == false && in.is_fst() ).
         Otherwise, an exception is thrown.
@@ -1654,6 +1654,15 @@ transducer.transform_weights(&func);
     (#SFST_TYPE or #FOMA_TYPE), nothing is done.
     */
     HFSTDLL HfstTransducer &transform_weights(float (*func)(float));
+
+    /** \brief Push labels towards initial or final state(s)
+        as defined by \a type.
+
+        If the HfstTransducer is of unweighted type
+        (#SFST_TYPE or #FOMA_TYPE), nothing is done.
+        @see PushType
+    */
+    HFSTDLL HfstTransducer &push_labels(PushType type);
 
     /** \brief Push weights towards initial or final state(s)
         as defined by \a type.

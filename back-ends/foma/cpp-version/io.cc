@@ -1,19 +1,19 @@
-/*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2014 Mans Hulden                                     */
+/*   Foma: a finite-state toolkit and library.                                 */
+/*   Copyright © 2008-2015 Mans Hulden                                         */
 
-/*     This file is part of foma.                                            */
+/*   This file is part of foma.                                                */
 
-/*     Foma is free software: you can redistribute it and/or modify          */
-/*     it under the terms of the GNU General Public License version 2 as     */
-/*     published by the Free Software Foundation.                            */
+/*   Licensed under the Apache License, Version 2.0 (the "License");           */
+/*   you may not use this file except in compliance with the License.          */
+/*   You may obtain a copy of the License at                                   */
 
-/*     Foma is distributed in the hope that it will be useful,               */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of        */
-/*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         */
-/*     GNU General Public License for more details.                          */
+/*      http://www.apache.org/licenses/LICENSE-2.0                             */
 
-/*     You should have received a copy of the GNU General Public License     */
-/*     along with foma.  If not, see <http://www.gnu.org/licenses/>.         */
+/*   Unless required by applicable law or agreed to in writing, software       */
+/*   distributed under the License is distributed on an "AS IS" BASIS,         */
+/*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  */
+/*   See the License for the specific language governing permissions and       */
+/*   limitations under the License.                                            */
 
 #include <stdio.h>
 #include <string.h>
@@ -141,7 +141,7 @@ int foma_write_prolog (struct fsm *net, char *filename) {
   int i, *finals, *used_symbols, maxsigma;
   FILE *out;
   char *outstring, *instring, identifier[100];
-  
+
   if (filename == NULL) {
     out = stdout;
   } else {
@@ -190,7 +190,7 @@ int foma_write_prolog (struct fsm *net, char *filename) {
 
     }
   }
-  
+
   for (; stateptr->state_no != -1; stateptr++) {
     if (stateptr->target == -1)
       continue;
@@ -209,7 +209,7 @@ int foma_write_prolog (struct fsm *net, char *filename) {
     if (strcmp(instring,"?") == 0 && stateptr->in > 2) instring = "%?";
     if (strcmp(outstring,"?") == 0 && stateptr->in > 2) outstring = "%?";
     /* Escape quotes */
-    
+
     if (net->arity == 2 && stateptr->in == IDENTITY && stateptr->out == IDENTITY) {
       fprintf(out, "\"?\").\n");
     }
@@ -304,7 +304,7 @@ struct fsm *fsm_read_prolog (char *filename) {
     struct fsm *outnet;
     struct fsm_construct_handle *outh = NULL;
     FILE *prolog_file;
-    
+
     has_net = 0;
     prolog_file = fopen(filename, "r");
     if (prolog_file == NULL) {
@@ -324,7 +324,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    temp_ptr2 = strstr(buf, ").");
 	    strncpy(temp, temp_ptr, (temp_ptr2 - temp_ptr));
 	    temp[(temp_ptr2-temp_ptr)] = '\0';
-	    
+
 	    /* Start network */
 	    outh = fsm_construct_init(temp);
 	}
@@ -334,7 +334,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    temp_ptr2 = strstr(temp_ptr, ").");
 	    strncpy(temp, temp_ptr, (temp_ptr2 - temp_ptr));
 	    temp[(temp_ptr2-temp_ptr)] = '\0';
-	    
+
 	    fsm_construct_set_final(outh, atoi(temp));
 	}
 	if (strstr(buf, "symbol(") == buf) {
@@ -345,7 +345,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    if (strcmp(temp, "%0") == 0)
 		strcpy(temp, "0");
 	    //printf("special: %s\n",temp);
-	    
+
 	    if (fsm_construct_check_symbol(outh, temp) == -1) {
 		fsm_construct_add_symbol(outh, temp);
 	    }
@@ -354,13 +354,13 @@ struct fsm *fsm_read_prolog (char *filename) {
 	if (strstr(buf, "arc(") == buf) {
 	    in[0] = '\0';
 	    out[0] = '\0';
-	    
+
 	    if (strstr(buf, "\":\"") == NULL || strstr(buf, ", \":\").") != NULL) {
 		arity = 1;
 	    } else {
 		arity = 2;
 	    }
-	    
+
 	    /* Get source */
 	    temp_ptr = strstr(buf, " ");
 	    temp_ptr++;
@@ -368,7 +368,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    strncpy(temp, temp_ptr, (temp_ptr2 - temp_ptr));
 	    temp[(temp_ptr2-temp_ptr)] = '\0';
 	    source = atoi(temp);
-	    
+
 	    /* Get target */
 	    temp_ptr = strstr(temp_ptr2, " ");
 	    temp_ptr++;
@@ -376,7 +376,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    strncpy(temp, temp_ptr, (temp_ptr2 - temp_ptr));
 	    temp[(temp_ptr2-temp_ptr)] = '\0';
 	    target = atoi(temp);
-	    
+
 	    temp_ptr = strstr(temp_ptr2, "\"");
 	    temp_ptr++;
 	    if (arity == 2)  {
@@ -386,7 +386,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    }
 	    strncpy(in, temp_ptr, (temp_ptr2 - temp_ptr));
 	    in[(temp_ptr2 - temp_ptr)] = '\0';
-	    
+
 	    if (arity == 2) {
 		temp_ptr = strstr(temp_ptr2, ":\"");
 		temp_ptr += 2;
@@ -421,7 +421,7 @@ struct fsm *fsm_read_prolog (char *filename) {
 	    if (strcmp(out, "%?") == 0) {
 		strcpy(out,"?");
 	    }
-	    
+
 	    if (arity == 1) {
 		fsm_construct_add_arc(outh, source, target, in, in);
 	    } else {
@@ -495,7 +495,7 @@ struct fsm *fsm_read_spaced_text_file(char *filename) {
     char *text, *textorig, *insym, *outsym, *t1, *t2, *l1, *l2;
 
     text = textorig = file_to_mem(filename);
-    
+
     if (text == NULL)
 	return NULL;
     th = fsm_trie_init();
@@ -738,7 +738,7 @@ struct fsm *io_net_read(struct io_buf_handle *iobh, char **net_name) {
     char buf[READ_BUF_SIZE];
     struct fsm *net;
     struct fsm_state *fsm;
-    
+
     char *new_symbol;
     int i, items, new_symbol_number, laststate, lineint[5], *cm;
     int extras;
@@ -747,7 +747,7 @@ struct fsm *io_net_read(struct io_buf_handle *iobh, char **net_name) {
     if (io_gets(iobh, buf) == 0) {
         return NULL;
     }
-    
+
     net = fsm_create("");
 
     if (strcmp(buf, "##foma-net 1.0##") != 0) {
@@ -911,7 +911,7 @@ int foma_net_print(struct fsm *net, gzFile outfile) {
     gzprintf(outfile, "%s","##props##\n");
 
     extras = (net->is_completed) | (net->arcs_sorted_in << 2) | (net->arcs_sorted_out << 4);
- 
+
 #ifdef ORIGINAL
     gzprintf(outfile,
 	     "%i %i %i %i %i %lld %i %i %i %i %i %i %s\n", net->arity, net->arccount, net->statecount, net->linecount, net->finalcount, net->pathcount, net->is_deterministic, net->is_pruned, net->is_minimized, net->is_epsilon_free, net->is_loop_free, extras, net->name);
@@ -919,7 +919,7 @@ int foma_net_print(struct fsm *net, gzFile outfile) {
     gzprintf(outfile,
 	     "%i %i %i %i %i "LONG_LONG_SPECIFIER" %i %i %i %i %i %i %s\n", net->arity, net->arccount, net->statecount, net->linecount, net->finalcount, net->pathcount, net->is_deterministic, net->is_pruned, net->is_minimized, net->is_epsilon_free, net->is_loop_free, extras, net->name);
 #endif
-    
+
     /* Sigma */
     gzprintf(outfile, "%s","##sigma##\n");
     for (sigma = net->sigma; sigma != NULL && sigma->number != -1; sigma = sigma->next) {
