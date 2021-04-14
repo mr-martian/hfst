@@ -340,7 +340,7 @@ RegexpCompiler::readSegment(HfstState from) {
                                   "@_EPSILON_SYMBOL_@", 0);
     HfstState cur = from;
     index++;
-    for (;; index++) {
+    while (true) {
       if (index == regex.size()) {
         error(EXIT_FAILURE, 0,
               "Missing closing parenthesis in regular expression on line %d",

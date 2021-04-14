@@ -131,6 +131,8 @@ parse_options(int argc, char** argv) {
   if (optind != argc - 2) {
     error(EXIT_FAILURE, 0, "direction and XML file are required");
   }
+  direction = argv[optind];
+  inputfilename = argv[optind+1];
 #include "inc/check-params-common.h"
   return EXIT_CONTINUE;
 }
