@@ -59,6 +59,12 @@ class DixCompiler {
     std::map<std::string, HfstBasicTransducer*> pars;
     HfstBasicTransducer* t;
 
+    std::string alt;
+    std::string var;
+    std::string varleft;
+    std::string varright;
+    bool keepboundaries;
+
     inline static bool const nameIs(const xmlNodePtr node, const char* name) {
       return xmlStrcmp(node->name, reinterpret_cast<const xmlChar*>(name)) == 0;
     };
@@ -82,6 +88,11 @@ class DixCompiler {
     DixCompiler(std::string direction);
     void parse(const char* filename);
     HfstTransducer* getTransducer(hfst::ImplementationType impl);
+    void setalt(char* val) { alt = val; }
+    void setvar(char* val) { var = val; }
+    void setvarleft(char* val) { varleft = val; }
+    void setvarright(char* val) { varright = val; }
+    void setkeepboundaries(bool val) { keepboundaries = val; }
 };
 
 }

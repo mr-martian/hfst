@@ -117,6 +117,28 @@ DixCompiler::readEntry(xmlNode* ent) {
   if ((e_dir == "LR" && dir == RL) || (e_dir == "RL" && dir == LR)) {
     return;
   }
+  if (getAttr(ent, "i") == "yes") {
+    return;
+  }
+  if (dir == RL) {
+    std::string altval = getAttr(ent, "alt");
+    if (altval != "" && altval != alt) {
+      return;
+    }
+    std::string varval = getAttr(ent, "v");
+    if (varval != "" && varval != var) {
+      return;
+    }
+    std::string varl = getAttr(ent, "vl");
+    if (varl != "" && varl != varleft) {
+      return;
+    }
+  } else {
+    std::string varr = getAttr(ent, "vr");
+    if (varr != "" && varr != varright) {
+      return;
+    }
+  }
   HfstState from = 0;
   HfstState to;
   for(xmlNode* elem = ent->children; elem != NULL; elem = elem->next) {
@@ -145,7 +167,6 @@ DixCompiler::readEntry(xmlNode* ent) {
         // which is what lt-comp does
       }
     } else if (nameIs(elem, "re")) {
-      warning(0, 0, "Compilation of <re> is not implemented yet - skipping instance on line %d", elem->line);
       std::string regex;
       for(xmlNode* seg = elem->children; seg != NULL; seg = seg->next) {
         if (seg->type == XML_TEXT_NODE) {
@@ -278,7 +299,9 @@ DixCompiler::readSegment(xmlNode* node, std::vector<std::string>& symbols) {
         symbols.push_back("<$>");
       }
     } else if (nameIs(node, "m")) {
-      symbols.push_back(">");
+      if (keepboundaries) {
+        symbols.push_back(">");
+      }
     } else if (nameIs(node, "s")) {
       symbols.push_back("<" + getAttr(node, "n") + ">");
     } else if (nameIs(node, "t") && mode == Separable) {

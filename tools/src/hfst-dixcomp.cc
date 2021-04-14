@@ -48,6 +48,11 @@ using hfst::HfstOutputStream;
 
 char* direction;
 char* inputfilename = 0;
+char* alt = 0;
+char* var = 0;
+char* varleft = 0;
+char* varright = 0;
+bool keepboundaries = false;
 static hfst::ImplementationType format = hfst::UNSPECIFIED_TYPE;
 
 void
@@ -90,11 +95,12 @@ parse_options(int argc, char** argv) {
         {"var",       required_argument, 0, 'v'},
         {"var-left",  required_argument, 0, 'l'},
         {"var-right", required_argument, 0, 'r'},
+        {"keep-boundaries", no_argument, 0, 'm'},
         {0,0,0,0}
     };
     int option_index = 0;
     int c = getopt_long(argc, argv, HFST_GETOPT_COMMON_SHORT
-                        HFST_GETOPT_UNARY_SHORT "f:a:v:l:r:",
+                        HFST_GETOPT_UNARY_SHORT "f:a:v:l:r:m",
                         long_options, &option_index);
     if (-1 == c) {
       break;
@@ -104,23 +110,26 @@ parse_options(int argc, char** argv) {
       case 'f':
         format = hfst_parse_format_name(optarg);
         break;
-      case 't':
-        //only_to_label = hfst_strdup(optarg);
-        break;
       case 'a':
-        //acx_file_name = hfst_strdup(optarg);
+        alt = hfst_strdup(optarg);
         break;
-      case 'T':
-        //tsv_file_name = hfst_strdup(optarg);
+      //case 'v': // TODO: conflicts with verbose flag
+      //  var = hfst_strdup(optarg);
+      //  break;
+      case 'l':
+        varleft = hfst_strdup(optarg);
+        break;
+      case 'r':
+        varright = hfst_strdup(optarg);
+        break;
+      case 'm':
+        keepboundaries = true;
         break;
 #include "inc/getopt-cases-error.h"
     }
   }
   if (optind != argc - 2) {
     error(EXIT_FAILURE, 0, "direction and XML file are required");
-  } else {
-    direction = argv[optind];
-    inputfilename = argv[optind+1];
   }
 #include "inc/check-params-common.h"
   return EXIT_CONTINUE;
@@ -152,7 +161,15 @@ int main( int argc, char **argv )
   }
   verbose_printf("Reading from %s, writing to %s\n",
       inputfilename, outfilename);
+
   hfst::DixCompiler comp(direction);
+
+  if (alt != 0) comp.setalt(alt);
+  if (var != 0) comp.setvar(var);
+  if (varleft != 0) comp.setvarleft(varleft);
+  if (varright != 0) comp.setvarright(varright);
+  comp.setkeepboundaries(keepboundaries);
+
   comp.parse(inputfilename);
 
   if (format == hfst::UNSPECIFIED_TYPE) {
