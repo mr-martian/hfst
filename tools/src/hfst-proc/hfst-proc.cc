@@ -226,10 +226,10 @@ int main(int argc, char **argv)
       break;
       
     case 'v':
-  //#ifdef DEBUG
+  #ifdef DEBUG
       printDebuggingInformationFlag = true;
       preserveDiacriticRepresentationsFlag = true;
-  //#endif
+  #endif
       
       verboseFlag = true;
       silentFlag = false;
