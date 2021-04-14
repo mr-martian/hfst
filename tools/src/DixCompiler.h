@@ -25,6 +25,22 @@ using hfst::implementations::HfstState;
 
 namespace hfst {
 
+class RegexpCompiler {
+  private:
+    HfstBasicTransducer* t;
+    std::string regex;
+    std::set<char>* alphabet;
+    size_t index;
+    bool compiled;
+    int line;
+
+    void compile();
+    HfstState readSegment(HfstState from);
+  public:
+    RegexpCompiler(std::string& reg, int ln, std::set<char>* alpha);
+    HfstBasicTransducer* getTransducer();
+};
+
 enum DixType {
   Standard,
   Separable
@@ -38,6 +54,7 @@ class DixCompiler {
 
     Direction dir;
     DixType mode;
+    std::set<char> alphabet;
     std::string current_par_name;
     std::map<std::string, HfstBasicTransducer*> pars;
     HfstBasicTransducer* t;

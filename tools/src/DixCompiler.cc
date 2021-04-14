@@ -44,11 +44,22 @@ DixCompiler::parse(const char* filename) {
     if (child->type != XML_ELEMENT_NODE) {
       continue;
     }
-    if (nameIs(child, "alphabet") || nameIs(child, "sdefs")) {
+    if (nameIs(child, "sdefs")) {
       continue;
-    }
-    else if (nameIs(child, "pardefs")) {
-      for(xmlNode* par = child->children; par != NULL; par = par->next) {
+    } else if (nameIs(child, "alphabet")) {
+      for (xmlNode* ch = child->children; ch != NULL; ch = ch->next) {
+        if (ch->type == XML_TEXT_NODE) {
+          std::string s = reinterpret_cast<const char*>(ch->content);
+          for (auto& it : s) {
+            alphabet.insert(it);
+          }
+        } else if (ch->type == XML_ELEMENT_NODE) {
+          error(EXIT_FAILURE, 0, "Unexpected element %s on line %d",
+                reinterpret_cast<const char*>(ch->name), ch->line);
+        }
+      }
+    } else if (nameIs(child, "pardefs")) {
+      for (xmlNode* par = child->children; par != NULL; par = par->next) {
         if (par->type != XML_ELEMENT_NODE) {
           continue;
         }
@@ -56,14 +67,12 @@ DixCompiler::parse(const char* filename) {
           readSection(par);
         } else {
           error(EXIT_FAILURE, 0, "Unexpected element %s on line %d",
-                  reinterpret_cast<const char*>(par->name), par->line);
+                reinterpret_cast<const char*>(par->name), par->line);
         }
       }
-    }
-    else if (nameIs(child, "section")) {
+    } else if (nameIs(child, "section")) {
       readSection(child);
-    }
-    else {
+    } else {
       xmlFreeDoc(doc);
       error(EXIT_FAILURE, 0, "Unexpected element %s on line %d",
               reinterpret_cast<const char*>(child->name), child->line);
@@ -131,9 +140,26 @@ DixCompiler::readEntry(xmlNode* ent) {
         to = t->add_state();
         t->insert_transducer(from, to, *pars[name]);
         from = to;
+        // this could be done more efficiently by tracking where
+        // we've already inserted initial and final paradigms
+        // which is what lt-comp does
       }
     } else if (nameIs(elem, "re")) {
       warning(0, 0, "Compilation of <re> is not implemented yet - skipping instance on line %d", elem->line);
+      std::string regex;
+      for(xmlNode* seg = elem->children; seg != NULL; seg = seg->next) {
+        if (seg->type == XML_TEXT_NODE) {
+          regex += std::string(reinterpret_cast<const char*>(seg->content));
+        } else if (seg->type == XML_ELEMENT_NODE) {
+          error(EXIT_FAILURE, 0, "Unexpected element %s on line %d",
+                reinterpret_cast<const char*>(seg->name), seg->line);
+        }
+      }
+      RegexpCompiler comp(regex, elem->line, &alphabet);
+      HfstBasicTransducer* r = comp.getTransducer();
+      to = t->add_state();
+      t->insert_transducer(from, to, *r);
+      from = to;
     } else if (nameIs(elem, "ig")) {
       from = readInvariant(elem, from);
     } else {
@@ -264,6 +290,168 @@ DixCompiler::readSegment(xmlNode* node, std::vector<std::string>& symbols) {
               reinterpret_cast<const char*>(node->name), node->line);
     }
   }
+}
+
+RegexpCompiler::RegexpCompiler(std::string& reg, int ln, std::set<char>* alpha) {
+  regex = "(" + reg + ")";
+  line = ln;
+  alphabet = alpha;
+  t = new HfstBasicTransducer();
+  compiled = false;
+  index = 0;
+}
+
+HfstState
+RegexpCompiler::readSegment(HfstState from) {
+  HfstState to = from;
+  char c = regex[index];
+  if (c == ')' || c == ']') {
+    error(EXIT_FAILURE, 0,
+          "Mismatched bracket in regular expression on line %d", line);
+  } else if (c == '*' || c == '?' || c == '+') {
+    error(EXIT_FAILURE, 0,
+          "Unexpected quantifier in regular expression on line %d", line);
+  } else if (c == '(') {
+    to = t->add_state();
+    HfstBasicTransition final_eps(to, "@_EPSILON_SYMBOL_@",
+                                  "@_EPSILON_SYMBOL_@", 0);
+    HfstState cur = from;
+    index++;
+    for (;; index++) {
+      if (index == regex.size()) {
+        error(EXIT_FAILURE, 0,
+              "Missing closing parenthesis in regular expression on line %d",
+              line);
+      }
+      if (regex[index] == ')') {
+        t->add_transition(cur, final_eps);
+        break;
+      } else if (regex[index] == '|') {
+        t->add_transition(cur, final_eps);
+        cur = from;
+      } else {
+        cur = readSegment(cur);
+      }
+    }
+  } else if (c == '[') {
+    index++;
+    bool negate = false;
+    if (regex[index] == '^') {
+      negate = true;
+      index++;
+    }
+    std::set<char> contents;
+    char prev = 0;
+    bool dash = false;
+    for (;; index++) {
+      if (index == regex.size()) {
+        error(EXIT_FAILURE, 0,
+              "Missing closing bracket in regular expression on line %d", line);
+      }
+      if (regex[index] == '\\') {
+        index++;
+        if (index == regex.size()) {
+          error(EXIT_FAILURE, 0,
+                "Trailing backslash in regular expression on line %d", line);
+        }
+        prev = regex[index];
+        contents.insert(prev);
+      } else if (regex[index] == '-') {
+        if (prev == 0 || dash) {
+          error(EXIT_FAILURE, 0,
+                "Unexpected dash in regular expression on line %d", line);
+        }
+        dash = true;
+      } else if (regex[index] == ']') {
+        if (dash) {
+          contents.insert('-');
+        }
+        break;
+      } else {
+        if (dash) {
+          char cur = regex[index];
+          if (cur <= prev) {
+            error(EXIT_FAILURE, 0,
+                  "Bad range in regular expression on line %d", line);
+          }
+          for (char i = prev+1; i < cur; i++) {
+            contents.insert(i);
+          }
+          dash = false;
+          prev = 0;
+        } else {
+          prev = regex[index];
+          contents.insert(prev);
+        }
+      }
+    }
+    if (negate) {
+      std::set<char> temp = *alphabet;
+      temp.swap(contents);
+      for (auto& it : temp) {
+        contents.erase(it);
+      }
+    }
+    if (contents.empty()) {
+      error(EXIT_FAILURE, 0,
+            "Empty character set in regular expression on line %d", line);
+    }
+    to = t->add_state();
+    for (auto& it : contents) {
+      HfstBasicTransition tr(to, std::string(1, it), std::string(1, it), 0);
+      t->add_transition(from, tr);
+    }
+  } else {
+    if (c == '\\') {
+      c = regex[++index];
+      if (index + 1 == regex.size()) {
+        error(EXIT_FAILURE, 0,
+              "Trailing backslash in regular expression on line %d", line);
+      }
+    }
+    to = t->add_state();
+    HfstBasicTransition tr(to, std::string(1, c), std::string(1, c), 0);
+    t->add_transition(from, tr);
+  }
+  index++;
+  if (index < regex.size()) {
+    std::string eps = "@_EPSILON_SYMBOL_@";
+    if (regex[index] == '+') {
+      HfstBasicTransition tr1(to, eps, eps, 0);
+      t->add_transition(from, tr1);
+      HfstBasicTransition tr2(from, eps, eps, 0);
+      t->add_transition(to, tr2);
+      index++;
+    } else if (regex[index] == '*') {
+      HfstBasicTransition tr(to, eps, eps, 0);
+      t->add_transition(from, tr);
+      index++;
+    } else if (regex[index] == '?') {
+      HfstBasicTransition tr(from, eps, eps, 0);
+      t->add_transition(to, tr);
+      index++;
+    }
+  }
+  return to;
+}
+
+void
+RegexpCompiler::compile() {
+  readSegment(0);
+  if (index != regex.size()) {
+    error(EXIT_FAILURE, 0,
+          "Mismatched bracket in regular expression on line %d", line);
+  } else {
+    compiled = true;
+  }
+}
+  
+HfstBasicTransducer*
+RegexpCompiler::getTransducer() {
+  if (!compiled) {
+    compile();
+  }
+  return t;
 }
 
 }

@@ -17,7 +17,7 @@
 
 SUBDIRS=hfst-proc hfst-twolc hfst-tagger parsers
 AUTOMAKE_OPTIONS=std-options subdir-objects
-LDADD = $(top_builddir)/libhfst/src/libhfst.la $(ICU_LIBS)
+LDADD = $(top_builddir)/libhfst/src/libhfst.la $(ICU_LIBS) $(LIBXML_LIBS)
 AM_CPPFLAGS = -I${top_srcdir}/libhfst/src -I${top_srcdir}/libhfst/src/parsers -I${top_srcdir}/tools/src/parsers -Wno-sign-compare ${GLIB_CPPFLAGS} ${ICU_CPPFLAGS} ${LIBXML_CFLAGS}
 AM_CXXFLAGS = -Wno-deprecated -Wno-sign-compare
 
@@ -46,8 +46,9 @@ endif
 if WANT_DISJUNCT
 MAYBE_DISJUNCT=hfst-disjunct$(EXEEXT)
 endif
-if WANT_DIXCOMP
+#if WANT_DIXCOMP
 MAYBE_DIXCOMP=hfst-dixcomp$(EXEEXT)
+#endif
 if WANT_PRIORITY_DISJUNCT
 MAYBE_PRIORITY_DISJUNCT=hfst-priority-disjunct$(EXEEXT)
 endif
@@ -207,7 +208,7 @@ noinst_HEADERS= \
 bin_PROGRAMS= \
 			 $(MAYBE_AFFIX_GUESSIFY)              \
 			 $(MAYBE_COMPARE) $(MAYBE_COMPOSE) $(MAYBE_CONCATENATE)     \
-			 $(MAYBE_CONJUNCT) $(MAYBE_DETERMINIZE) $(MAYBE_DISJUNCT)   \
+			 $(MAYBE_CONJUNCT) $(MAYBE_DETERMINIZE) $(MAYBE_DISJUNCT) $(MAYBE_DIXCOMP)  \
 			 $(MAYBE_PRIORITY_DISJUNCT) $(MAYBE_MULTIPLY) $(MAYBE_EDIT_METADATA)                  \
 			 $(MAYBE_FORMAT) $(MAYBE_ELIMINATE_FLAGS) $(MAYBE_FST2FST) \
 			 $(MAYBE_FST2STRINGS)      \
@@ -228,8 +229,7 @@ bin_PROGRAMS= \
 			 $(MAYBE_FORMAT)                     \
 			 $(MAYBE_COMPOSE_INTERSECT) $(MAYBE_NAME) $(MAYBE_PAIR_TEST)\
 			 $(MAYBE_TRAVERSE) $(MAYBE_GUESSIFY) $(MAYBE_GUESS) \
-			 $(MAYBE_INFO) $(MAYBE_EXPAND_EQUIVALENCES) \
-			 $(MAYBE_DIXCOMP)
+			 $(MAYBE_INFO) $(MAYBE_EXPAND_EQUIVALENCES)
 
 HFST_COMMON_SRC=hfst-program-options.cc hfst-commandline.cc hfst-tool-metadata.cc
 

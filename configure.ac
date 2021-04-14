@@ -259,7 +259,7 @@ AC_ARG_ENABLE([disjunct],
 AM_CONDITIONAL([WANT_DISJUNCT], [test x$enable_disjunct != xno])
 AC_ARG_ENABLE([dixcomp],
 			  [AS_HELP_STRING([--enable-dixcomp],
-							  [build dixcomp tool @<:@default=no@:>@])],
+							  [build dixcomp tool @<:@default=yes@:>@])],
 			  [enable_dixcomp=$enableval],
 			  [enable_dixcomp=$enable_all_tools])
 AM_CONDITIONAL([WANT_DIXCOMP], [test x$enable_disjunct != xno])
@@ -861,6 +861,7 @@ cat <<EOF
     *                 determinize: $enable_determinize (determinise)
     *                 disjunct: $enable_disjunct (union)
     *                 priority-disjunct: $enable_priority_disjunct (priority union)
+    *                 dixcomp: $enable_dixcomp
     *                 eliminate-flags: $enable_eliminate_flags
     *                 foma: $enable_foma_wrapper
     *                 format: $enable_format
